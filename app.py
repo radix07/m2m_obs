@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
+@app.route('/index.html')
 def index():
     salutation = choice(salutations)
     return render_template('index.html', salutation=salutation)
