@@ -1,6 +1,5 @@
 import os,sys
 import atexit
-import threading
 import cherrypy
 
 cherrypy.config.update({'environment':'embedded'})
@@ -16,7 +15,7 @@ class Root(object): pass
 cherrypy.tree.mount(Root(), '/', config={
         '/': {
                 'tools.staticdir.on': True,
-                'tools.staticdir.dir': PATH+'\sb-admin-v2',
+                'tools.staticdir.dir': PATH+'/sb-admin-v2',
                 'tools.staticdir.index': 'index.html',
             },
     })
