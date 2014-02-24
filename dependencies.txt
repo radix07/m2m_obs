@@ -1,0 +1,5 @@
+pip install virtualenv
+sudo apt-get install python-psycopg2
+()
+sudo apt-get install postgresql
+pip install Flask gunicorn
