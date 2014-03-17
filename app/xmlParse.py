@@ -10,7 +10,7 @@ from xml.dom import minidom
    <DeviceCore>
       <id>
          <devId>1094434</devId>
-         <devVersion>12</devVersion>
+         <devVersion>12</devVersion> 
       </id>
       <devRecordStartDate>2013-12-23T21:47:00.000Z</devRecordStartDate>
       <devMac>00:0c:29:ad:9c:49</devMac>
@@ -19,7 +19,7 @@ from xml.dom import minidom
       <grpId>9881</grpId>
       <devEffectiveStartDate>2013-12-09T20:59:00.000Z</devEffectiveStartDate>
       <devTerminated>false</devTerminated>
-      <dvVendorId>50332145</dvVendorId>
+      <dvVendorId>50332145</dvVendorId> 
       <dpDeviceType>SICoM Sample</dpDeviceType>
       <dpFirmwareLevel>16777216</dpFirmwareLevel>
       <dpFirmwareLevelDesc>1.0.0.0</dpFirmwareLevelDesc>
@@ -61,7 +61,10 @@ def parseDeviceListing(ds):
                 group = s.getElementsByTagName("grpPath")[0].firstChild.nodeValue
         except:
             group="root"
-        valueList.append([connectID,lat,longit,group])
+        if len(s.getElementsByTagName("dpConnectionStatus")):
+            connected = s.getElementsByTagName("dpConnectionStatus")[0].firstChild.nodeValue
+
+        valueList.append([connectID,lat,longit,group,connected])
     
     return valueList
 
@@ -134,3 +137,4 @@ def parseStreamListingXML(ds):
             #get sub value
         valueList.append(test)    ##devID,dataItem
     return valueList
+

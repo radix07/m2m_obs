@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>57b2dd6d-8869-4f14-af9b-dca48a6b58a6</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>E:\_Engineering\WebServer\pgsicom\run.py</StartupFile>
+    <SearchPath>E:\_Engineering\WebServer\pgsicom;..\..\pgsicom</SearchPath>
+    <WorkingDirectory>E:\_Engineering\WebServer\pgsicom</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>webPgSicom</Name>
+    <RootNamespace>webPgSicom</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>2af0f10d-7135-4994-9156-5d01c9c11b7e</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="app\datamanager.py" />
+    <Compile Include="app\emails.py" />
+    <Compile Include="app\etheriosmanager.py" />
+    <Compile Include="app\forms.py" />
+    <Compile Include="app\models.py" />
+    <Compile Include="app\views.py" />
+    <Compile Include="app\xmlParse.py" />
+    <Compile Include="config.py" />
+    <Compile Include="run.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="app" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" />
+</Project>

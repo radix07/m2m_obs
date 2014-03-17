@@ -2,17 +2,38 @@ import httplib
 import base64
 import xmlParse
 
+
+
 class etheriosData:
     #username = "pgSatterlee" # enter your username
     #password = "Pgecs-2322" # enter your password
     username = "TestMe"
     password = "Password_123"
     auth = base64.encodestring("%s:%s"%(username,password))[:-1]
+    def __init__(self):
+        self.deviceListInfo = []
+        self.streamListInfo = []
+
     #Group->Users
     #Group->Devices
+
+    def setUserNamePassword(self,usern,passw):
+        username = usern
+        password = passw
+
+    def setDeviceLocation(self,deviceID,lat,longit):
+        message = """<DeviceCore>
+              <devConnectwareId>{0}</devConnectwareId> 
+                <dpMapLat>{1}</dpMapLat>
+                <dpMapLong>{2}</dpMapLong>
+            </DeviceCore>
+            """.format(self.deviceID,lat,longit)
+        self.genericWebServiceCall("/DeviceCore","PUT",message)
+
     def listDevices(self):
         response_body = self.genericWebServiceCall("/DeviceCore","GET")
-        return xmlParse.parseDeviceListing(response_body)
+        self.deviceListInfo = xmlParse.parseDeviceListing(response_body)
+        return self.deviceListInfo
     def getUserList(self):
         pass
 
@@ -21,7 +42,8 @@ class etheriosData:
 
     def getStreamListData(self):
         response_body = self.genericWebServiceCall("/DataStream/","GET")
-        return xmlParse.parseStreamListingXML(response_body)
+        self.streamListInfo = xmlParse.parseStreamListingXML(response_body)
+        return self.streamListInfo
 
     def getDataStream(self,devID,dataStr):
         response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}".format(devID,dataStr),"GET")
