@@ -35,9 +35,9 @@
                     <span class="icon-bar"></span>
                 </button>
 				{% if title %}
-					<a class="navbar-brand" href="index.html">{{title}} - PG SICoM</a>
+					<a class="navbar-brand" href="{{request.script_root }}/index.html">{{title}} - PG SICoM</a>
 				{%else%}
-				<a class="navbar-brand" href="index.html">PG SICoM</a>
+				<a class="navbar-brand" href="{{request.script_root }}/index.html">PG SICoM</a>
 				{%endif%}
             </div>
             <!-- /.navbar-header -->
@@ -132,7 +132,7 @@
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
                         <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                        <li><a href="{{request.script_root }}/login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
                     </ul>
                     <!-- /.dropdown-user -->
@@ -159,43 +159,43 @@
                         <!-- /input-group -->
                     </li>
                     <li>
-                        <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        <a href="{{request.script_root }}/index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                     </li>
                     <li>
                         <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="flot.html">Flot Charts</a>
+                                <a href="{{request.script_root }}/flot.html">Flot Charts</a>
                             </li>
                             <li>
-                                <a href="morris.html">Morris.js Charts</a>
+                                <a href="{{request.script_root }}/morris.html">Morris.js Charts</a>
                             </li>
                         </ul>
                         <!-- /.nav-second-level -->
                     </li>
                     <li>
-                        <a href="tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
+                        <a href="{{request.script_root }}/tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
                     </li>
                     <li>
-                        <a href="controllers.html"><i class="fa fa-edit fa-fw"></i> Controllers</a>
+                        <a href="{{request.script_root }}/controllers.html"><i class="fa fa-edit fa-fw"></i> Controllers</a>
                     </li>
                     <li>
                         <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="panels-wells.html">Panels and Wells</a>
+                                <a href="{{request.script_root }}/panels-wells.html">Panels and Wells</a>
                             </li>
                             <li>
-                                <a href="buttons.html">Buttons</a>
+                                <a href="{{request.script_root }}/buttons.html">Buttons</a>
                             </li>
                             <li>
-                                <a href="notifications.html">Notifications</a>
+                                <a href="{{request.script_root }}/notifications.html">Notifications</a>
                             </li>
                             <li>
-                                <a href="typography.html">Typography</a>
+                                <a href="{{request.script_root }}/typography.html">Typography</a>
                             </li>
                             <li>
-                                <a href="grid.html">Grid</a>
+                                <a href="{{request.script_root }}/grid.html">Grid</a>
                             </li>
                         </ul>
                         <!-- /.nav-second-level -->
@@ -234,10 +234,10 @@
                         <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="blank.html">Blank Page</a>
+                                <a href="{{request.script_root }}/blank.html">Blank Page</a>
                             </li>
                             <li>
-                                <a href="login.html">Login Page</a>
+                                <a href="{{request.script_root }}/login.html">Login Page</a>
                             </li>
                         </ul>
                         <!-- /.nav-second-level -->

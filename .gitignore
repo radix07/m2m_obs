@@ -1,2 +1,4 @@
 venv
+etheriosdatastore
+tmp
 *.pyc

@@ -11,28 +11,55 @@ class User(db.Model):
     #posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
     #device = db.relationship('Device', backref = 'author', lazy = 'dynamic')
     #allowedDevices?
-
     def is_authenticated(self):
         return True
-
     def is_active(self):
         return True
-
     def is_anonymous(self):
         return False
-
     def get_id(self):
         return unicode(self.id)
-
     def __repr__(self):
         return '<User %r>' % (self.nickname)    
-class device(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    location = db.Column(db.SmallInteger, default = ROLE_USER)
 
-class dataStream(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
+class device(db.Model):
+    id                      = db.Column(db.Integer, primary_key = True)
+    location                = db.Column(db.SmallInteger, default = ROLE_USER)
+    devConnectwareId        = db.Column(db.String(64), unique = True)
+    devMac                  = db.Column(db.String(64), unique = True)
+    dpGlobalIp              = db.Column(db.String(64), unique = True)
+    dpConnectionStatus      = db.Column(db.String(64), unique = True)
+    dpGlobalIp              = db.Column(db.String(64), unique = True)
+    dpLastKnownIp           = db.Column(db.String(64), unique = True)
+    dpMapLat                = db.Column(db.String(64), unique = True)
+    dpMapLong               = db.Column(db.String(64), unique = True)
+    dpLastDisconnectTime    = db.Column(db.String(64), unique = True)
+    #firmware
+    #grpID
+    #cstID
+    #startDate
+    #grpPath
+    #contact
+    #description
+
+#class dataStream(db.Model):
+    #id = db.Column(db.Integer, primary_key = True)
     #type - event,processed,raw
+
+class dataPointRecords(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    devID = db.Column(db.String(64), unique = True)
+    streamID = db.Column(db.String(64), unique = True)
+    timeStamp = db.Column(db.String(64), unique = True)
+    datapoint = db.Column(db.String(64), unique = True)
+
+class latestDataStreamPoints(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    devID = db.Column(db.String(64), unique = True)
+    streamID = db.Column(db.String(64), unique = True)
+    timeStamp = db.Column(db.String(64), unique = True)
+    datapoint = db.Column(db.String(64), unique = True)
+    units = db.Column(db.String(64), unique = True)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)

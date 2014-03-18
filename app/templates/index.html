@@ -4,70 +4,69 @@
 	<script type="text/javascript"
 	  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdnC1PD8QZ21nNokwwa5Uanimg3_z7HPY&sensor=false">
 	</script>
-								<script type="text/javascript">	  								
-									function initialize() {
-									  var mapOptions = {
-										zoom: 3,
-										center: new google.maps.LatLng(30, -40)
-									  }
-									  var map = new google.maps.Map(document.getElementById('map-canvas'),
-																	mapOptions);
+	<script type="text/javascript">	  								
+			function initialize() {
+			  var mapOptions = {
+				zoom: 3,
+				center: new google.maps.LatLng(30, -40)
+			  }
+			  var map = new google.maps.Map(document.getElementById('map-canvas'),
+											mapOptions);
 
-									  setMarkers(map, devices);
-									}
-
-									/**
-									 * Data for the markers consisting of a name, a LatLng and a zIndex for
-									 * the order in which these markers should display on top of each
-									 * other.
-									 */
-									var devices = [
-									{% for i in devList %}
-									  ['{{i[0]}}', {{i[1]}}, {{i[2]}}, 4,"controllers/{{i[0]}}"],
-									{% endfor %}
-									  //['SICoM A', 42.259636, -89.058201, 4,"A"],
-									  ['SICoM B', 48.259636, -88.058201, 5,"B"],
-									  ['SICoM C', 45.259636, -93.058201, 3,"C"],
-									  ['SICoM D', 44.259636, 0, 2,"D"],
-									  ['SICoM E', 43.259636, -89.058201, 1,"E"]
-									];
-									function setMarkers(map, locations) {
-									  var image = {
-										url: '../static/favicon.ico',
-										// This marker is 20 pixels wide by 32 pixels tall.
-										size: new google.maps.Size(32, 32),
-										// The origin for this image is 0,0.
-										origin: new google.maps.Point(0,0),
-										// The anchor for this image is the base of the flagpole at 0,32.
-										anchor: new google.maps.Point(0, 32)
-									  };
-									  var shape = {
-										  coord: [1, 1, 1, 20, 18, 20, 18 , 1],
-										  type: 'poly'
-									  };
-									  for (var i = 0; i < locations.length; i++) {
-										var beach = locations[i];
-										var myLatLng = new google.maps.LatLng(beach[1], beach[2]);
-										var infowindow = new google.maps.InfoWindow({
-											  content: beach[4]
-										});								
-										var marker = new google.maps.Marker({
-											position: myLatLng,
-											map: map,
-											icon: image,
-											shape: shape,
-											title: beach[0],
-											zIndex: beach[3],
-											url:beach[4]
-										});
-										google.maps.event.addListener(marker, 'click', function() {
-											window.location.href = this.url;//file:///E:/_Engineering/WebServer/pgsicom/app/templates/
-										});
-									  }
-									}
-									
-									google.maps.event.addDomListener(window, 'load', initialize);
-								</script>
+			  setMarkers(map, devices);
+			}
+			/**
+			 * Data for the markers consisting of a name, a LatLng and a zIndex for
+			 * the order in which these markers should display on top of each
+			 * other.
+			 */
+			var devices = [
+			{% for i in devList %}
+			  ['{{i[0]}}', {{i[1]}}, {{i[2]}}, 4,"controller/{{i[0]}}"],
+			{% endfor %}
+			  //['SICoM A', 42.259636, -89.058201, 4,"A"],
+			  //['SICoM B', 48.259636, -88.058201, 5,"B"],
+			  //['SICoM C', 45.259636, -93.058201, 3,"C"],
+			  //['SICoM D', 44.259636, 0, 2,"D"],
+			  //['SICoM E', 43.259636, -89.058201, 1,"E"]
+			];
+			function setMarkers(map, locations) {
+			  var image = {
+				url: '../static/favicon.ico',
+				// This marker is 20 pixels wide by 32 pixels tall.
+				size: new google.maps.Size(32, 32),
+				// The origin for this image is 0,0.
+				origin: new google.maps.Point(0,0),
+				// The anchor for this image is the base of the flagpole at 0,32.
+				anchor: new google.maps.Point(0, 32)
+			  };
+			  var shape = {
+				  coord: [1, 1, 1, 20, 18, 20, 18 , 1],
+				  type: 'poly'
+			  };
+			  for (var i = 0; i < locations.length; i++) {
+				var beach = locations[i];
+				var myLatLng = new google.maps.LatLng(beach[1], beach[2]);
+				var infowindow = new google.maps.InfoWindow({
+					  content: beach[4]
+				});								
+				var marker = new google.maps.Marker({
+					position: myLatLng,
+					map: map,
+					icon: image,
+					shape: shape,
+					title: beach[0],
+					zIndex: beach[3],
+					url:beach[4]
+				});
+				google.maps.event.addListener(marker, 'click', function() {
+					window.location.href = this.url;//file:///E:/_Engineering/WebServer/pgsicom/app/templates/
+				});
+			  }
+			}
+			
+			google.maps.event.addDomListener(window, 'load', initialize);
+		</script>
 
         <div id="page-wrapper">
             <div class="row">
@@ -81,19 +80,43 @@
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Fleet Map							
+                            <i class="fa fa-bar-chart-o fa-fw"></i>Fleet Monitoring
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-							
-								<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-								<style type="text/css">
-								  html { height: 900px }
-								  body { height: 900px; margin: 0; padding: 0 }
-								  #map-canvas { width:100%; height:500px }
-								</style>
-								<div id="map-canvas"></div>		
-						
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills">
+                                <li class="active"><a href="#home-pills" data-toggle="tab">Map</a></li>
+                                <li><a href="#profile-pills" data-toggle="tab">Power</a></li>
+                                <li><a href="#messages-pills" data-toggle="tab">Charge</a></li>
+                                <li><a href="#settings-pills" data-toggle="tab">Voltage</a></li>
+                            </ul>
+
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="home-pills">
+                                    <h4>Fleet Map</h4>								
+									<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+									<style type="text/css">
+									  html { height: 900px }
+									  body { height: 900px; margin: 0; padding: 0 }
+									  #map-canvas { width:100%; height:500px }
+									</style>
+									<div id="map-canvas"></div>		
+                                </div>
+                                <div class="tab-pane fade" id="profile-pills">
+                                    <h4>Fleet Power</h4>
+                                    <p>Parse system power stream data to a stacked line chart, similar to base example template</p>
+                                </div>
+                                <div class="tab-pane fade" id="messages-pills">
+                                    <h4>Fleet Charge</h4>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                </div>
+                                <div class="tab-pane fade" id="settings-pills">
+                                    <h4>Fleet Voltage</h4>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                                </div>
+                            </div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -105,22 +128,26 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-lg-8">
+                                <div class="col-lg-12">
                                     <div class="table-responsive">
                                         <table class="table table-bordered table-hover table-striped">
                                             <thead>
                                                 <tr>
                                                     <th>Device</th>
-                                                    <th>Data 1</th>
-                                                    <th>Data 2</th>                                                    
+                                                    <th>Location</th>
+													<th>Global IP</th>
+                                                    <th>Status</th>
+													<th>Last Disconnect</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
 												{% for i in devList %}
                                                 <tr>
-                                                    <td><a href="controllers/{{ i[0] }}">{{ i[0] }}</a></td>
-                                                    <td>10/21/2013</td>
-                                                    <td>3:29 PM</td>
+                                                    <td><a href="controller/{{ i[0] }}">{{ i[0] }}</a></td>
+                                                    <td>{{i[1]}},{{i[2]}}</td>
+                                                    <td>{{i[5]}}</td>
+													<td>{{i[4]}}</td>
+													<td>{{i[6]}}</td>
                                                 </tr>
 												{% endfor %}
                                             </tbody>
@@ -145,7 +172,7 @@
                 <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bell fa-fw"></i> Notifications Panel
+                            <i class="fa fa-bell fa-fw"></i> System Alarms and Events
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">

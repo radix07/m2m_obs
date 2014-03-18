@@ -52,6 +52,11 @@ def parseDeviceListing(ds):
         group=""
         if len(s.getElementsByTagName("devConnectwareId")):
             connectID = s.getElementsByTagName("devConnectwareId")[0].firstChild.nodeValue
+        if len(s.getElementsByTagName("dpGlobalIp")):
+            globID = s.getElementsByTagName("dpGlobalIp")[0].firstChild.nodeValue
+        if len(s.getElementsByTagName("dpLastDisconnectTime")):
+            disconnectTime = s.getElementsByTagName("dpLastDisconnectTime")[0].firstChild.nodeValue
+
         if len(s.getElementsByTagName("dpMapLat")):
             lat = s.getElementsByTagName("dpMapLat")[0].firstChild.nodeValue
         if len(s.getElementsByTagName("dpMapLong")):
@@ -64,7 +69,7 @@ def parseDeviceListing(ds):
         if len(s.getElementsByTagName("dpConnectionStatus")):
             connected = s.getElementsByTagName("dpConnectionStatus")[0].firstChild.nodeValue
 
-        valueList.append([connectID,lat,longit,group,connected])
+        valueList.append([connectID,lat,longit,group,connected,globID,disconnectTime ])
     
     return valueList
 
@@ -124,6 +129,7 @@ def parseDataStreamXML(ds):
    </DataStream>
 '''
 def parseStreamListingXML(ds):
+    
     xmldoc = minidom.parseString(ds)
     itemlist = xmldoc.getElementsByTagName('DataStream') 
     valueList=[]
