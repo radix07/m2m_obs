@@ -27,6 +27,7 @@ def raw_index():
     return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
 
 
+
 @app.route('/test.html')
 def testPage():
     print "TEST"
