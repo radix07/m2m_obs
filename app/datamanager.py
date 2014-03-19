@@ -4,6 +4,12 @@ from sqlalchemy import func
 #######################GET################################
 
 ##Device
+def removeAllDevices():
+    print "Deleting All Devices"
+    devices = models.device.query.all()
+    for dev  in devices:
+        db.session.delete(dev)
+    db.session.commit()
 def getDeviceList():
     return models.device.query.all()
 def getDeviceByID(id):

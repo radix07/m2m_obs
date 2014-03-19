@@ -4,10 +4,10 @@ ROLE_USER = 0
 ROLE_ADMIN = 1
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    nickname = db.Column(db.String(64), unique = True)
-    email = db.Column(db.String(120), index = True, unique = True)
-    role = db.Column(db.SmallInteger, default = ROLE_USER)
+    id          = db.Column(db.Integer, primary_key = True)
+    nickname    = db.Column(db.String(64), unique = True)
+    email       = db.Column(db.String(120), index = True, unique = True)
+    role        = db.Column(db.SmallInteger, default = ROLE_USER)
     #posts = db.relationship('Post', backref = 'author', lazy = 'dynamic')
     #device = db.relationship('Device', backref = 'author', lazy = 'dynamic')
     #allowedDevices?
@@ -54,12 +54,14 @@ class dataPointRecords(db.Model):
     datapoint = db.Column(db.String(64), unique = False)
 
 class latestDataStreamPoints(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    devID = db.Column(db.String(64), unique = False)
-    streamID = db.Column(db.String(64), unique = False)
-    timeStamp = db.Column(db.String(64), unique = False)
-    datapoint = db.Column(db.String(64), unique = False)
-    units = db.Column(db.String(64), unique = False)
+    
+    id          = db.Column(db.Integer, primary_key = True)
+
+    devID       = db.Column(db.String(64), unique = False)
+    streamID    = db.Column(db.String(64), unique = False)
+    timeStamp   = db.Column(db.String(64), unique = False)
+    datapoint   = db.Column(db.String(64), unique = False)
+    units       = db.Column(db.String(64), unique = False)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)

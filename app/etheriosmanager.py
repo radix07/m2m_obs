@@ -23,6 +23,7 @@ class etheriosData:
         self.streamListInfo = []
         self.streamDataList = {}
         self.firstCall = 1
+        datamanager.removeAllDevices()
     def initFromDB(self, force=0):
         if self.firstCall or force:
             if force:
