@@ -25,15 +25,15 @@ class User(db.Model):
 class device(db.Model):
     id                      = db.Column(db.Integer, primary_key = True)
     location                = db.Column(db.SmallInteger, default = ROLE_USER)
-    devConnectwareId        = db.Column(db.String(64), unique = true)
-    devMac                  = db.Column(db.String(64), unique = false)
-    dpGlobalIp              = db.Column(db.String(64), unique = false)
-    dpConnectionStatus      = db.Column(db.String(64), unique = false)
-    dpGlobalIp              = db.Column(db.String(64), unique = false)
-    dpLastKnownIp           = db.Column(db.String(64), unique = false)
-    dpMapLat                = db.Column(db.String(64), unique = false)
-    dpMapLong               = db.Column(db.String(64), unique = false)
-    dpLastDisconnectTime    = db.Column(db.String(64), unique = false)
+    devConnectwareId        = db.Column(db.String(64), unique = True)
+    devMac                  = db.Column(db.String(64), unique = False)
+    dpGlobalIp              = db.Column(db.String(64), unique = False)
+    dpConnectionStatus      = db.Column(db.String(64), unique = False)
+    dpGlobalIp              = db.Column(db.String(64), unique = False)
+    dpLastKnownIp           = db.Column(db.String(64), unique = False)
+    dpMapLat                = db.Column(db.String(64), unique = False)
+    dpMapLong               = db.Column(db.String(64), unique = False)
+    dpLastDisconnectTime    = db.Column(db.String(64), unique = False)
     #firmware
     #grpID
     #cstID
@@ -48,18 +48,18 @@ class device(db.Model):
 
 class dataPointRecords(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    devID = db.Column(db.String(64), unique = false)
-    streamID = db.Column(db.String(64), unique = false)
-    timeStamp = db.Column(db.String(64), unique = false)
-    datapoint = db.Column(db.String(64), unique = false)
+    devID = db.Column(db.String(64), unique = False)
+    streamID = db.Column(db.String(64), unique = False)
+    timeStamp = db.Column(db.String(64), unique = False)
+    datapoint = db.Column(db.String(64), unique = False)
 
 class latestDataStreamPoints(db.Model):
     id = db.Column(db.Integer, primary_key = True)
-    devID = db.Column(db.String(64), unique = false)
-    streamID = db.Column(db.String(64), unique = false)
-    timeStamp = db.Column(db.String(64), unique = false)
-    datapoint = db.Column(db.String(64), unique = false)
-    units = db.Column(db.String(64), unique = false)
+    devID = db.Column(db.String(64), unique = False)
+    streamID = db.Column(db.String(64), unique = False)
+    timeStamp = db.Column(db.String(64), unique = False)
+    datapoint = db.Column(db.String(64), unique = False)
+    units = db.Column(db.String(64), unique = False)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
