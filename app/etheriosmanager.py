@@ -27,7 +27,10 @@ class etheriosData:
         if self.firstCall:
             self.firstCall = 0
             result = datamanager.getMostRecentTSDataPoint()
-            print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
+            try:
+                print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
+            except:
+                print "No data Points"
             result = datamanager.getDeviceList()  #models.device.query.all()
             if len(result) ==0:
                 print "No Devices in database"
