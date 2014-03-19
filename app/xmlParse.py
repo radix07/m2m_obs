@@ -41,7 +41,7 @@ from xml.dom import minidom
    </DeviceCore>
 '''
 def parseDeviceListing(ds):
-    print ds
+    #print ds
     xmldoc = minidom.parseString(ds)
     itemlist = xmldoc.getElementsByTagName('DeviceCore') 
     valueList=[]

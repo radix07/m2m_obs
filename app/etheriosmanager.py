@@ -23,8 +23,11 @@ class etheriosData:
         self.streamListInfo = []
         self.streamDataList = {}
         self.firstCall = 1
-    def initFromDB(self):
-        if self.firstCall:
+    def initFromDB(self, force=0):
+        if self.firstCall or force:
+            if force:
+                print "forcing init"
+
             self.firstCall = 0
             result = datamanager.getMostRecentTSDataPoint()
             try:

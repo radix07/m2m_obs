@@ -26,7 +26,10 @@ def raw_index():
     app.logger.debug(etherios.deviceListInfo)
     return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
 
-
+@app.route('/force')
+def forceUpdate():
+    etherios.initFromDB(1)
+    return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
 
 @app.route('/test.html')
 def testPage():
