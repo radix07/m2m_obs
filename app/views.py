@@ -16,11 +16,13 @@ import datamanager
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 etherios = etheriosmanager.etheriosData()
-etherios.initFromDB()
+
 
 @app.route('/index.html')
 @app.route('/')
 def raw_index():
+    etherios.initFromDB()
+        
     app.logger.debug(etherios.deviceListInfo)
     return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
 
