@@ -29,11 +29,11 @@ class etheriosData:
                 print "forcing init"
 
             self.firstCall = 0
-            result = datamanager.getMostRecentTSDataPoint()
-            try:
-                print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
-            except:
-                print "No data Points"
+            #try:
+                #result = datamanager.getMostRecentTSDataPoint()
+                #print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
+            #except:
+                #print "No data Points"
             result = datamanager.getDeviceList()  #models.device.query.all()
             if len(result) ==0:
                 print "No Devices in database"
@@ -110,9 +110,12 @@ class etheriosData:
         #([connectID,lat,longit,group,connected,globID,disconnectTime ])
         for i in self.deviceListInfo:
             print i
-            result = datamanager.getDeviceByID(i[0])
+            try:
+                result = datamanager.getDeviceByID(i[0])
+            except:
+                pass
             if result is None:
-                print "\tNEW Device","\t",i[2],i[3]
+                print "\tNEW Device","\t",i[1],i[3]
                 if i[0][0] == "0":
                     i[0].upper()
                 datamanager.addNewDevice(devConnectwareId=i[0],dpMapLat=i[1],dpMapLong=i[2],dpConnectionStatus=i[4],dpGlobalIp=i[5],dpLastDisconnectTime=i[6])
@@ -126,7 +129,9 @@ class etheriosData:
                 result.dpConnectionStatus=i[4]
                 result.dpGlobalIp=i[5]
                 result.dpLastDisconnectTime=i[6]
+        print "Committing Device List..."
         datamanager.commitDB()
+        
         return self.deviceListInfo
     
     def getUserList(self):

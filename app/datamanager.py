@@ -43,8 +43,15 @@ def getAllDatapoints(devID,streamID):
 
 ####################ADD#############################
 def addNewDevice(devConnectwareId,dpMapLat,dpMapLong,dpConnectionStatus,dpGlobalIp,dpLastDisconnectTime):
-    recordItem = models.device(devConnectwareId=devConnectwareId,dpMapLat=dpMapLat,dpMapLong=dpMapLong,dpConnectionStatus=dpConnectionStatus,dpGlobalIp=dpGlobalIp,dpLastDisconnectTime=dpLastDisconnectTime)
+    recordItem = models.device(devConnectwareId=str(devConnectwareId),
+                               dpMapLat=str(dpMapLat),dpMapLong=str(dpMapLong),
+                               dpConnectionStatus=str(dpConnectionStatus),
+                               dpGlobalIp=str(dpGlobalIp),
+                               dpLastDisconnectTime=str(dpLastDisconnectTime))
     db.session.add(recordItem)
+    print "Pre Commit Changes"
+    db.session.commit()
+    print "Commit Change"
     return recordItem
 def addNewStream(devID,streamID,timeStamp,datapoint):
     recordItem = models.latestDataStreamPoints(devID=devID,streamID=streamID,timeStamp =timeStamp ,datapoint=datapoint)
