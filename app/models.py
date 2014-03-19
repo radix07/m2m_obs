@@ -28,7 +28,7 @@ class device(db.Model):
     devConnectwareId        = db.Column(db.String(64), unique = True)
     devMac                  = db.Column(db.String(64), unique = False)
     dpGlobalIp              = db.Column(db.String(64), unique = False)
-    dpConnectionStatus      = db.Column(db.String(64), unique = False)
+    dpConnectionStatus      = db.Column(db.String(64))
     dpGlobalIp              = db.Column(db.String(64), unique = False)
     dpLastKnownIp           = db.Column(db.String(64), unique = False)
     dpMapLat                = db.Column(db.String(64), unique = False)
