@@ -6,7 +6,7 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from forms import LoginForm
 from models import User, ROLE_USER, ROLE_ADMIN
 from random import choice
-import time,datetime
+import time
 import datamanager
 import etheriosmanager
 from app import app, db, lm, oid
@@ -28,9 +28,9 @@ def raw_index():
 @app.route('/test.html')
 def testPage():
     print "TEST"
-    app.logger.debug(etherios.listDevices())
-    #app.logger.debug(etherios.getLatestStreamValues())    
-    #app.logger.debug(etherios.getStreamListData())
+    app.logger.debug(etherios.updateDeviceList())
+    #app.logger.debug(etherios.updateLatestStreamValues())    
+    #app.logger.debug(etherios.updateStreamListDataPoints())
     #return render_template(temp)
     return render_template('login.html')
 
@@ -47,8 +47,14 @@ def controllers():
 def dataPointView(deviceID,streamID):
     print "DATA POINT VIEW"
     streamList = datamanager.getAllDatapoints(deviceID,streamID)
-    for i in streamList:
-        print i.timeStamp,i.datapoint
+    
+    for st in streamList:
+        if st.timeStamp.isdigit():
+            st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
+        else:
+            st.timeStamp = "--"
+            st.datapoint = "--"
+
     return render_template('dataPointList.html',   #dataPoint
                            user= 'Ryan',
                            streamList=streamList,
@@ -70,7 +76,8 @@ def controller(deviceID):
     #app.logger.debug(streamList)
     return render_template('device.html',
                            user= 'Ryan',
-                           streamList=streamList)
+                           streamList=streamList,
+                           devID = deviceID)
 
 @app.route('/flot.html')
 def flot():
@@ -96,7 +103,7 @@ if __name__ == '__main__':
 @app.route('/getEtheriosStreams.xml')
 def etheriosStreams():
     app.logger.debug("Etherios Call")
-    return ", ".join(str(x) for x in etherios.getStreamListData())
+    return ", ".join(str(x) for x in etherios.updateStreamListDataPoints())
 
 
 @app.route('/getEtheriosEnginePoints.xml')
@@ -105,6 +112,6 @@ def etheriosPoints():
     dataStr = "EngineSpeedFloat"
     app.logger.debug("Etherios Call")
     
-    return dataStr+":"+", ".join(str(x) for x in etherios.listDevices())
-    return dataStr+":"+", ".join(str(x) for x in etherios.getDataStream(deviceID,dataStr))
+    return dataStr+":"+", ".join(str(x) for x in etherios.updateDeviceList())
+    return dataStr+":"+", ".join(str(x) for x in etherios.getDataStreamPoints(deviceID,dataStr))
     '''

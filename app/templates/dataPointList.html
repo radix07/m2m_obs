@@ -1,10 +1,37 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
+<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+<script type='text/javascript'>
+  google.load('visualization', '1.1', {'packages':['annotationchart']});
+  google.setOnLoadCallback(drawChart);
+  function drawChart() {
+	var data = new google.visualization.DataTable();
+	data.addColumn('date', 'Date');
+	data.addColumn('number', '{{stID}}');
+	//data.addColumn('string', 'Kepler title');
+	//data.addColumn('string', 'Kepler text');
+	//data.addColumn('number', 'Gliese 163 mission');
+	//data.addColumn('string', 'Gliese title');
+	//data.addColumn('string', 'Gliese text');
+	data.addRows([		
+		{% for i in streamList %}[new Date("{{i.timeStamp}}"),{{i.datapoint}}],{% endfor %}		
+	]);
+
+	var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+
+	var options = {
+	  displayAnnotations: true,
+	};
+
+	chart.draw(data, options);
+  }
+</script>
+
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
+                    <h1 class="page-header">{{stID}}</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -13,46 +40,52 @@
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> {{devID}}\{{stID}} Data List
+                            <i class="fa fa-bar-chart-o fa-fw"></i> 
+							<a href="{{request.script_root }}/controller/{{devID}}">{{devID}}</a>\{{stID}} Data List
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div class="row">
-                                <div class="col-lg-8">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-hover table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>Sample Time</th>
-                                                    <th>Value</th>
-													<!-- Units,Min,Max-->
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-												{% for i in streamList %}
-                                                <tr>
-                                                    <td>{{i.datapoint}}</td>
-                                                    <td>{{i.timeStamp}}</td>
-                                                </tr>
-												{% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <!-- /.table-responsive -->
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-pills">
+                                <li class="active"><a href="#home-pills" data-toggle="tab">Chart</a></li>
+                                <li><a href="#datalist-pills" data-toggle="tab">Data List</a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+								<div class="tab-pane fade in active" id="home-pills">
+									<div id='chart_div' style='width: 900px; height: 500px;'></div>
+								</div>
+                                <div class="tab-pane fade" id="datalist-pills">
+                                    <h4>Data Listing </h4>(need paging implemented...)
+										<div class="col-lg-8">
+											<div class="table-responsive">
+												<table class="table table-bordered table-hover table-striped">
+													<thead>
+														<tr>
+															<th>Sample Time</th>
+															<th>Value</th>
+															<!-- Units,Min,Max-->
+														</tr>
+													</thead>
+													<tbody>
+														{% for i in streamList[:10] %}
+														<tr><td>{{i.timeStamp}}</td><td>{{i.datapoint}}</td></tr>
+														{% endfor %}
+													</tbody>
+												</table>
+											</div>
+											<!-- /.table-responsive -->
+										</div><!-- /.col-lg-8 (nested) -->									
+										 
                                 </div>
-                                <!-- /.col-lg-8 (nested) -->
-                                <div class="col-lg-8">
-                                    <div id="morris-bar-chart"></div>
-                                </div>
-                                <!-- /.col-lg-8 (nested) -->
-                            </div>
-                            <!-- /.row -->
+							
 						
                         </div>
                         <!-- /.panel-body -->
                     </div>
                     <!-- /.panel -->                    
                 </div>
+				</div>
                 <!-- /.col-lg-8 -->
                 <div class="col-lg-4">
                     <div class="panel panel-default">
@@ -115,7 +148,7 @@
                     </div>
                     <!-- /.panel -->
                 </div>
-                <!-- /.col-lg-4 -->
+                <!-- /.col-lg-4  EVENT BLOCK -->
             </div>
             <!-- /.row -->
         </div>

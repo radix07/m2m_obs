@@ -129,18 +129,24 @@ def parseDataStreamXML(ds):
    </DataStream>
 '''
 def parseStreamListingXML(ds):
-    
+    #print ds
     xmldoc = minidom.parseString(ds)
     itemlist = xmldoc.getElementsByTagName('DataStream') 
     valueList=[]
     for s in itemlist:
+        units=""
         test = s.getElementsByTagName("streamId")[0].firstChild.nodeValue.split("/")
         sublist = s.getElementsByTagName('currentValue')
+        if len(s.getElementsByTagName("units")):
+            try:units = s.getElementsByTagName("units")[0].firstChild.nodeValue
+            except: pass
         for b in sublist:
             test.append(b.getElementsByTagName("timestamp")[0].firstChild.nodeValue)
             test.append(b.getElementsByTagName("data")[0].firstChild.nodeValue)
         #test.append(s.getElementsByTagName("data")[0].firstChild.nodeValue)
             #get sub value
+        test.append(units)
         valueList.append(test)    ##devID,dataItem
+
     return valueList
 
