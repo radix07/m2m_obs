@@ -68,6 +68,7 @@ class etheriosData:
                 #should extend to recent datapoints, and get latest if stale (older than.. 1 day/hour??)
                 #print "Len:",len(result),result[0].id, result[0].devID,result[0].datapoint,result[0].timeStamp
                 pass
+
     def printFormattedNestedArray(self,ar,head=""):
         print 
         print "-"*100
