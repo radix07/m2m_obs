@@ -25,15 +25,15 @@ class User(db.Model):
 class device(db.Model):
     id                      = db.Column(db.Integer, primary_key = True)
     location                = db.Column(db.SmallInteger, default = ROLE_USER)
-    devConnectwareId        = db.Column(db.String(64), unique = True)
-    devMac                  = db.Column(db.String(64), unique = False)
-    dpGlobalIp              = db.Column(db.String(64), unique = False)
+    devConnectwareId        = db.Column(db.String(64))  #unique??
+    devMac                  = db.Column(db.String(64))
+    dpGlobalIp              = db.Column(db.String(64))
     dpConnectionStatus      = db.Column(db.String(64))
-    dpGlobalIp              = db.Column(db.String(64), unique = False)
-    dpLastKnownIp           = db.Column(db.String(64), unique = False)
-    dpMapLat                = db.Column(db.String(64), unique = False)
-    dpMapLong               = db.Column(db.String(64), unique = False)
-    dpLastDisconnectTime    = db.Column(db.String(64), unique = False)
+    dpGlobalIp              = db.Column(db.String(64))
+    dpLastKnownIp           = db.Column(db.String(64))
+    dpMapLat                = db.Column(db.String(64))
+    dpMapLong               = db.Column(db.String(64))
+    dpLastDisconnectTime    = db.Column(db.String(64))
     #firmware
     #grpID
     #cstID
