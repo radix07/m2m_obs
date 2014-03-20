@@ -42,6 +42,7 @@ class etheriosData:
                 #other datatables should be empty if there are no devices
                     #Should they be deleted/emptied?
             else:
+                self.deviceListInfo =[]
                 for record in result:       #([connectID,lat,longit,group,connected,globID,disconnectTime ])
                     self.deviceListInfo.append([record.devConnectwareId,record.dpMapLat,record.dpMapLong,"",record.dpConnectionStatus,record.dpGlobalIp,record.dpLastDisconnectTime])
                 #check for new devices if stale
@@ -52,6 +53,7 @@ class etheriosData:
                 print "No Streams in database"
                 self.updateLatestStreamValues()     #query for all streams
             else:
+                self.streamListInfo =[]
                 for record in result:       #(devID,StreamID,TS,datapoint)
                     self.streamListInfo.append([record.devID,record.streamID,record.timeStamp,record.datapoint])
                 #check for new streams
