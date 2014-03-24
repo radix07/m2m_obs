@@ -22,7 +22,7 @@ class etheriosData:
         self.deviceListInfo = []
         self.streamListInfo = []
         self.streamDataList = {}
-        initFromDB()
+        self.initFromDB()
 
     def initFromDB(self):
 
@@ -57,7 +57,7 @@ class etheriosData:
             self.updateStreamListDataPoints()
             #get all data if db empty
         else:   #Just testing for existance of data points
-            print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
+            #print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
             #datamanager.normalizeDataPointRecords()
             #should extend to recent datapoints, and get latest if stale (older than.. 1 day/hour??)
             #print "Len:",len(result),result[0].id, result[0].devID,result[0].datapoint,result[0].timeStamp
