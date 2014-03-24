@@ -22,54 +22,46 @@ class etheriosData:
         self.deviceListInfo = []
         self.streamListInfo = []
         self.streamDataList = {}
-        self.firstCall = 1
-        
-    def initFromDB(self, force=0):
-        if self.firstCall or force:
-            if force:
-                print "forcing init"
+        initFromDB()
 
-            self.firstCall = 0
-            #try:
-                #result = datamanager.getMostRecentTSDataPoint()
-                #print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
-            #except:
-                #print "No data Points"
-            result = datamanager.getDeviceList()  #models.device.query.all()
-            if len(result) ==0:
-                print "No Devices in database"
-                self.updateDeviceList()
-                #other datatables should be empty if there are no devices
-                    #Should they be deleted/emptied?
-            else:
-                self.deviceListInfo =[]
-                for record in result:       #([connectID,lat,longit,group,connected,globID,disconnectTime ])
-                    self.deviceListInfo.append([record.devConnectwareId,record.dpMapLat,record.dpMapLong,"",record.dpConnectionStatus,record.dpGlobalIp,record.dpLastDisconnectTime])
-                #check for new devices if stale
-                #self.printFormattedNestedArray(self.deviceListInfo)
+    def initFromDB(self):
 
-            result = datamanager.getStreamList()
-            if len(result) ==0:
-                print "No Streams in database"
-                self.updateLatestStreamValues()     #query for all streams
-            else:
-                self.streamListInfo =[]
-                for record in result:       #(devID,StreamID,TS,datapoint)
-                    self.streamListInfo.append([record.devID,record.streamID,record.timeStamp,record.datapoint])
-                #check for new streams
-                #self.printFormattedNestedArray(self.streamListInfo)
+        result = datamanager.getDeviceList()
+        if len(result) ==0:
+            print "No Devices in database"
+            self.updateDeviceList()
+            #other datatables should be empty if there are no devices
+                #Should they be deleted/emptied?
+        else:
+            self.deviceListInfo =[]
+            for record in result:       #([connectID,lat,longit,group,connected,globID,disconnectTime ])
+                self.deviceListInfo.append([record.devConnectwareId,record.dpMapLat,record.dpMapLong,"",record.dpConnectionStatus,record.dpGlobalIp,record.dpLastDisconnectTime])
+            #check for new devices if stale
+            #self.printFormattedNestedArray(self.deviceListInfo)
+
+        result = datamanager.getStreamList()
+        if len(result) ==0:
+            print "No Streams in database"
+            self.updateLatestStreamValues()     #query for all streams
+        else:
+            self.streamListInfo =[]
+            for record in result:       #(devID,StreamID,TS,datapoint)
+                self.streamListInfo.append([record.devID,record.streamID,record.timeStamp,record.datapoint])
+            #check for new streams
+            #self.printFormattedNestedArray(self.streamListInfo)
         
-            #check for any datapoints
-            result = datamanager.getAnyDatapoint()
-            if len(result) == 0:
-                print "No datapoints exist"
-                self.updateStreamListDataPoints()
-                #get all data if db empty
-            else:   #Just testing for existance of data points
-                #datamanager.normalizeDataPointRecords()
-                #should extend to recent datapoints, and get latest if stale (older than.. 1 day/hour??)
-                #print "Len:",len(result),result[0].id, result[0].devID,result[0].datapoint,result[0].timeStamp
-                pass
+        #check for any datapoints
+        result = datamanager.getAnyDatapoint()
+        if len(result) == 0:
+            print "No datapoints exist"
+            self.updateStreamListDataPoints()
+            #get all data if db empty
+        else:   #Just testing for existance of data points
+            print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
+            #datamanager.normalizeDataPointRecords()
+            #should extend to recent datapoints, and get latest if stale (older than.. 1 day/hour??)
+            #print "Len:",len(result),result[0].id, result[0].devID,result[0].datapoint,result[0].timeStamp
+            pass
 
     def printFormattedNestedArray(self,ar,head=""):
         print 

@@ -21,3 +21,5 @@ heroku run init
 heroku run upgrade
 heroku logs -t (tail track)
 heroku logs -n 1000
+
+heroku pg:info -a pgsicom
