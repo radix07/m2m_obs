@@ -5,14 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	{% if title %}
-		<title>{{title}} - PG SICoM</title>
+		<title>{{title}} - PG SICoM Local</title>
 	{% else %}
-		<title>PG SICoM</title>
+		<title>PG SICoM Local</title>
 	{% endif %}
     <!-- Core CSS - Include with every page -->
 	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">	
 	<link href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}" rel="stylesheet">	
+
+	<link href="{{ url_for('static', filename='css/plugins/dataTables/dataTables.bootstrap.css') }}" rel="stylesheet">	
 
     <!-- Page-Level Plugin CSS - Dashboard -->
 	<link href="{{ url_for('static', filename='css/plugins/morris/morris-0.4.3.min.css') }}" rel="stylesheet">	
@@ -131,6 +133,7 @@
                         </li>
                         <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                         </li>
+						
                         <li class="divider"></li>
                         <li><a href="{{request.script_root }}/logout"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
                         </li>
@@ -158,83 +161,26 @@
                         </div>
                         <!-- /input-group -->
                     </li>
-					{% if local %}
                     <li>
                         <a href="{{request.script_root }}/localDash.html"><i class="fa fa-dashboard fa-fw"></i> Local Controller</a>
-                    </li>					
-					{% endif %}
+                    </li>										
                     <li>
-                        <a href="{{request.script_root }}/index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                        <a href="{{request.script_root }}/index.html"><i class="fa fa-sitemap fa-fw"></i> Fleet Dashboard</a>
                     </li>
 
                     <li>
-                        <a href="{{request.script_root }}/tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
-                    </li>
-                    <li>
-                        <a href="{{request.script_root }}/controllers.html"><i class="fa fa-edit fa-fw"></i> Controllers</a>
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="{{request.script_root }}/panels-wells.html">Panels and Wells</a>
-                            </li>
-                            <li>
-                                <a href="{{request.script_root }}/buttons.html">Buttons</a>
-                            </li>
-                            <li>
-                                <a href="{{request.script_root }}/notifications.html">Notifications</a>
-                            </li>
-                            <li>
-                                <a href="{{request.script_root }}/typography.html">Typography</a>
-                            </li>
-                            <li>
-                                <a href="{{request.script_root }}/grid.html">Grid</a>
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
-                    </li>
-                    <li>
-                        <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="#">Second Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Second Level Item</a>
-                            </li>
-                            <li>
-                                <a href="#">Third Level <span class="fa arrow"></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                    <li>
-                                        <a href="#">Third Level Item</a>
-                                    </li>
-                                </ul>
-                                <!-- /.nav-third-level -->
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
-                    </li>
-                    <li class="active">
-                        <a href="#"><i class="fa fa-files-o fa-fw"></i> Sample Pages<span class="fa arrow"></span></a>
-                        <ul class="nav nav-second-level">
-                            <li>
-                                <a href="{{request.script_root }}/blank.html">Blank Page</a>
-                            </li>
-                            <li>
-                                <a href="{{request.script_root }}/login.html">Login Page</a>
-                            </li>
-                        </ul>
-                        <!-- /.nav-second-level -->
+						<!--<a href="{{request.script_root }}/localSettings.html"><i class="fa fa-wrench fa-fw"></i>Settings</a>-->
+							<!--<a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>-->
+							<a href="{{request.script_root }}/localSettings.html"><i class="fa fa-wrench fa-fw"></i>Settings<span class="fa arrow"></span></a>
+							<ul class="nav nav-second-level">
+								<li>
+									<a href="#">User Interface</a>
+								</li>
+								<li>
+									<a href="#">Controller Interface</a>
+								</li>
+							</ul>
+							<!-- /.nav-second-level -->						
                     </li>
                 </ul>
                 <!-- /#side-menu -->
@@ -255,15 +201,26 @@
     <script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
 
     <!-- Page-Level Plugin Scripts - Dashboard -->
-    <script src="{{ url_for('static', filename='js/plugins/morris/raphael-2.1.0.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/plugins/morris/morris.js') }}"></script>
 
+    <script src="{{ url_for('static', filename='js/plugins/dataTables/jquery.dataTables.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plugins/dataTables/dataTables.bootstrap.js') }}"></script>
+	
     <!-- SB Admin Scripts - Include with every page -->
     <script src="{{ url_for('static', filename='js/sb-admin.js') }}"></script>
 
     <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
+	{%if not datatable%}
+    <script src="{{ url_for('static', filename='js/plugins/morris/raphael-2.1.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plugins/morris/morris.js') }}"></script>	
     <script src="{{ url_for('static', filename='js/demo/dashboard-demo.js') }}"></script>
-
+	{% else %}
+    <script>
+	<!-- Page-Level Demo Scripts - Tables - Use for reference -->
+    $(document).ready(function() {
+        $('#dataTables-example').dataTable();
+    });
+    </script>			
+	{%endif%}	    
 </body>
 
 </html>

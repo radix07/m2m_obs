@@ -29,6 +29,7 @@
     <Compile Include="app\etheriosmanager.py" />
     <Compile Include="app\forms.py" />
     <Compile Include="app\models.py" />
+    <Compile Include="app\rpcServer.py" />
     <Compile Include="app\views.py" />
     <Compile Include="app\xmlParse.py" />
     <Compile Include="app\__init__.py" />

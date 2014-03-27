@@ -1,4 +1,7 @@
 venv
 etheriosdatastore
 tmp
+dist
+build
+db_0
 *.pyc
