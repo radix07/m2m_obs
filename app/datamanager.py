@@ -1,5 +1,7 @@
 from app import db, models
+from models import User, ROLE_USER, ROLE_ADMIN
 from sqlalchemy import func
+import time
 
 #######################GET################################
 
@@ -10,8 +12,10 @@ def removeAllDevices():
     for dev  in devices:
         db.session.delete(dev)
     db.session.commit()
+
 def getDeviceList():
     return models.device.query.all()
+
 def getDeviceByID(id):
     return models.device.query.filter_by(devConnectwareId=id).first()
 
@@ -22,6 +26,13 @@ def getStreamListByDeviceID(id):
     return models.latestDataStreamPoints.query.filter(models.latestDataStreamPoints.devID.ilike("%"+id.lower()+"%")).all()
     #return models.latestDataStreamPoints.query.filter(func.lower(models.latestDataStreamPoints.devID) == func.lower(id)).all()
     #user = models.User.                   query.filter(func.lower(User.username                      ) == func.lower("GaNyE")).first()
+def addOrGetUser(username,password):
+    user = User.query.filter_by(username=username,password=password).first()
+    if user is None:        
+        user = models.User(username = username, password = password)
+        db.session.add(user)
+    return user
+
 ##Stream
 def getStreamListByDeviceIDAndStreamID(did,sid):
     return models.latestDataStreamPoints.query.filter_by(streamID=sid,devID=did).first()
@@ -30,7 +41,7 @@ def getStreamList():
 def getStreamListByStreamID(id):
     return models.latestDataStreamPoints.query.filter_by(streamID=id).all()
 
-##DataPoint
+##DataPoints
 def getDataPoint(devID,streamID,timeStamp,datapoint):
     return models.dataPointRecords.query.filter_by(devID=devID,streamID=streamID,timeStamp=timeStamp,datapoint=datapoint).first()
 
@@ -46,15 +57,20 @@ def getAllDatapoints(devID,streamID):
     return models.dataPointRecords.query.filter(models.dataPointRecords.devID.ilike("%"+devID.lower()+"%"),
                                                 models.dataPointRecords.streamID==streamID).all()
     #return models.dataPointRecords.query.filter_by(streamID=streamID,devID=devID).all()
+def getAllEventOccurances(count=10):
+    print "Get Event Occurances"
+    return formatEpochTimeofList(models.dataPointRecords.query.filter( models.dataPointRecords.streamID=="EventList").order_by(models.dataPointRecords.timeStamp).limit(10))
+
 
 ####################ADD#############################
 def addNewDevice(devConnectwareId,dpMapLat,dpMapLong,dpConnectionStatus,dpGlobalIp,dpLastDisconnectTime):
+    #query if exists, then if doesnt
     recordItem = models.device(devConnectwareId=str(devConnectwareId),
                                dpMapLat=str(dpMapLat),dpMapLong=str(dpMapLong),
                                dpConnectionStatus=str(dpConnectionStatus),
                                dpGlobalIp=str(dpGlobalIp),
                                dpLastDisconnectTime=str(dpLastDisconnectTime))
-    db.session.add(recordItem)
+    db.session.save(recordItem) #was add()
     print "Pre Commit Changes"
     db.session.commit()
     print "Commit Change"
@@ -81,8 +97,17 @@ def normalizeDataPointRecords():
 def commitDB():
     db.session.commit()
 ##############Utility#################
+def formatEpochTimeofList(list):
+    for st in list:
+        if st.timeStamp.isdigit():
+            st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
+        else:
+            st.timeStamp = "--"
+    return list
+
 def fixDevID(devID):
     set=0
+    devID = devID.upper()
     if devID[7] == "-": #fix missing 0 prefix in device
         print devID
         devID = "0"+devID
@@ -91,7 +116,7 @@ def fixDevID(devID):
         print devID
         devID = devID.upper()
         set=1
-    return devID,set
+    return devID
 
 #def normalizeLatestDataStreamDeviceID():
     #make all items same case and length for similar

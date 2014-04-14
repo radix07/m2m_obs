@@ -1,40 +1,37 @@
 import os
-from flask import render_template, flash, redirect, session, url_for, request, g, jsonify
-from flask import Flask,render_template,abort, redirect, url_for
-
+from flask import render_template, flash, session, request, g, jsonify
+from flask import Flask,abort, redirect, url_for
+#from jinja2 import TemplateNotFound
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from functools import wraps
-from flask import g, request, redirect, url_for
-
 from flask.ext.sqlalchemy import SQLAlchemy
-from forms import LoginForm
+from functools import wraps
+from datetime import datetime
+
+from app import app, db, lm
+
 from models import User, ROLE_USER, ROLE_ADMIN
+from forms import LoginForm
 from random import choice
 import time
-from datetime import datetime
-import datamanager
 import etheriosmanager
-from app import app, db, lm
 import datamanager
 
 
-if os.environ.get('DATABASE_URL') is None:
-    localFrontEnd = 1
-    import rpcServer
-    rpc = rpcServer.xmlServerProc()
-    import webbrowser
-    new = 2
-    url = "http://127.0.0.1:5000"
-    webbrowser.open(url,new=new)
-else:
+if not os.environ.get('DATABASE_URL') is None:
     localFrontEnd = 0
+else:
+    localFrontEnd = 1
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+#need to skip this init if migrating database...
 etherios = etheriosmanager.etheriosData()
 
 @lm.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+def load_user(id):    
+    return etherios.ethUser
+    #return User.query.get(int(id))
 
 @app.before_request
 def before_request():
@@ -44,6 +41,7 @@ def before_request():
         db.session.add(g.user)
         db.session.commit()
 
+
 @app.route('/login',methods = ['GET', 'POST'])
 def login():
     if g.user is not None and g.user.is_authenticated():
@@ -51,16 +49,19 @@ def login():
     form = LoginForm(request.form)
 
     if form.validate_on_submit():
-        registered_user = User.query.filter_by(username=form.openid.data,password=form.password.data).first()
-        if registered_user is None:
+        registered_user = etherios.tryLogin(form.openid.data,form.password.data)
+        #registered_user = User.query.filter_by(username=form.openid.data,password=form.password.data).first()
+        if registered_user is None:        
             flash('Username or Password is invalid' , 'error')
             return redirect(url_for('login'))
+        
+        #add if new user/
         login_user(registered_user, remember = form.remember_me.data)
         return redirect('/index')
 
     return render_template('login.html', 
-        title = 'Sign In',
-        form = form)
+                            title = 'Sign In',
+                            form = form)
 
 @app.route('/logout')
 @login_required
@@ -73,9 +74,13 @@ def logout():
 @app.route('/index')
 @app.route('/')
 @login_required
-def raw_index():
+def index_page():
     app.logger.debug(etherios.deviceListInfo)
-    return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo,local=localFrontEnd)
+    return render_template('index.html',user= 'Ryan',
+                           devList=etherios.deviceListInfo,
+                           eventData=datamanager.getAllEventOccurances(),
+                           local=localFrontEnd,
+                           datatable=1)
 
 @app.route('/clean')
 @login_required
@@ -91,25 +96,33 @@ def forceUpdate():
     return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
 
 @app.route('/test.html')
-@login_required
 def testPage():
-    print "TEST"
-    app.logger.debug(etherios.updateDeviceList())
+    #app.logger.debug(datamanager.getAllEventOccurances())
+    #events = datamanager.getAllEventOccurances()
+    #for e in events:
+        #print e.datapoint,e.timeStamp
+    etherios.getRecentDataPoints()
+
+    #if etherios.tryLogin("123","456"):
+        #pass
+    #else:
+        #return redirect('logout')
+    #app.logger.debug()
+    #app.logger.debug(etherios.tryLogin("TestMe","Password_123"))
+    
     #app.logger.debug(etherios.updateLatestStreamValues())    
     #app.logger.debug(etherios.updateStreamListDataPoints())
     #return render_template(temp)
-    return render_template('login.html')
-
+    return redirect('index')
 
 @app.route('/controllers.html')
 @login_required
 def controllers():
-    return render_template('controllers.html',user= 'Ryan',devList=etherios.deviceListInfo)
+    return render_template('controllers.html',user= 'Ryan',devList=etherios.deviceListInfo,datatable=1)
 
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
-    print "DATA POINT VIEW"
     streamList = datamanager.getAllDatapoints(deviceID,streamID)
     
     for st in streamList:
@@ -123,7 +136,9 @@ def dataPointView(deviceID,streamID):
                            user= 'Ryan',
                            streamList=streamList,
                            devID = deviceID,
-                           stID = streamID)
+                           stID = streamID,
+                           eventData=datamanager.getAllEventOccurances(),
+                           datatable=1)
 
 
 @app.route('/controller/<deviceID>')
@@ -142,31 +157,11 @@ def controller(deviceID):
     return render_template('device.html',
                            user= 'Ryan',
                            streamList=streamList,
-                           devID = deviceID)
-
-@app.route('/flot.html')
-@login_required
-def flot():
-    app.logger.debug("float")
-    salutation = choice(testStringData)
-    return render_template('flot.html', salutation=testStringData[0])
-
-@app.route('/tables.html')
-@login_required
-def tablesTest():
-    app.logger.debug("float")
-    salutation = choice(testStringData)
-    return render_template('tables.html', salutation=testStringData[0])
+                           devID = deviceID,
+                           eventData=datamanager.getAllEventOccurances(),
+                           datatable=1)
 
 
-##########################LocalControlViews############################
-@app.route('/localDash.html')
-@login_required
-def localController():
-    #seperate base template
-    db = rpc.getDatabase()
-
-    return render_template('localDash.html',user= 'Ryan',db=db,datatable=1)
 #onInit
     #getSettings
     #getDatabase
@@ -185,32 +180,9 @@ def localController():
 #get/build local database?
 
 
-
-testStringData = [
-    'TEST PG SICOM',]
-
-
 if __name__ == '__main__':
     print "VIEW IS MAIN"
     port = int(os.environ.get('PORT', 5000))
     if port == 5000:
         app.debug = True
     app.run(host='0.0.0.0', port=port)
-
-
-    '''
-@app.route('/getEtheriosStreams.xml')
-def etheriosStreams():
-    app.logger.debug("Etherios Call")
-    return ", ".join(str(x) for x in etherios.updateStreamListDataPoints())
-
-
-@app.route('/getEtheriosEnginePoints.xml')
-def etheriosPoints():
-    deviceID = "pythonPC1_Ryan" #"0000000-00000000-00042dFF-FF0418fb"
-    dataStr = "EngineSpeedFloat"
-    app.logger.debug("Etherios Call")
-    
-    return dataStr+":"+", ".join(str(x) for x in etherios.updateDeviceList())
-    return dataStr+":"+", ".join(str(x) for x in etherios.getDataStreamPoints(deviceID,dataStr))
-    '''

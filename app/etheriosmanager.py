@@ -3,6 +3,8 @@ import base64
 import xmlParse
 import datamanager
 import time
+
+
 #Group->Users (TBD???)
     #User->Device (allowances...???)
 #Group->Devices
@@ -10,23 +12,38 @@ import time
     #Devices -> Files
 
 
-class etheriosData:
-    #username = "pgSatterlee" # enter your username
-    #password = "Pgecs-2322" # enter your password
-    username = "TestMe"
-    password = "Password_123"
-    auth = base64.encodestring("%s:%s"%(username,password))[:-1]
-
+class etheriosData:    
     def __init__(self):
+        self.username = "" #"TestMe"
+        self.password = "" #"Password_123"
+        self.auth = base64.encodestring("%s:%s"%(self.username,self.password))[:-1]
         self.oneCall=0
         self.deviceListInfo = []
         self.streamListInfo = []
-        self.streamDataList = {}
-        self.initFromDB()
+        self.streamDataList = {}        
+        self.ethUser =None
 
+    def tryLogin(self,un,pw):
+        self.auth = base64.encodestring("%s:%s"%(un,pw))[:-1]        
+        response_body = self.genericWebServiceCall("/DeviceCore","GET")
+        print un,pw, self.auth
+        print "Result:",response_body
+        if "Bad credentials" in response_body:
+            self.auth = base64.encodestring("%s:%s"%(self.username,self.password))[:-1]
+            print self.username,self.password, self.auth
+            return None
+        else:
+            username = un
+            password = pw
+            user = datamanager.addOrGetUser(username,password)                        
+            self.ethUser = user
+            self.initFromDB()
+            return user
+    
     def initFromDB(self):
-
-        result = datamanager.getDeviceList()
+        #result = datamanager.getDeviceList()
+        self.getNewDevices()
+        '''
         if len(result) ==0:
             print "No Devices in database"
             self.updateDeviceList()
@@ -38,6 +55,7 @@ class etheriosData:
                 self.deviceListInfo.append([record.devConnectwareId,record.dpMapLat,record.dpMapLong,"",record.dpConnectionStatus,record.dpGlobalIp,record.dpLastDisconnectTime])
             #check for new devices if stale
             #self.printFormattedNestedArray(self.deviceListInfo)
+        '''
 
         result = datamanager.getStreamList()
         if len(result) ==0:
@@ -74,10 +92,23 @@ class etheriosData:
         print "-"*100
     
     def getNewDevices(self):
-        pass
+        self.updateDeviceList()
     def getNewStreams(self):
         pass
-    def getNewDataPoints(self):
+    def getRecentDataPoints(self):
+        '''
+            Will be run periodically as scheduled task or on-demad (force update/refresh) to update new Etherios data points
+            could be incorporated into a live mode possibly? Or maybe handle seperately... (JS on user machine direct to cloud)
+            (Typically a daily run should suffice, and only ~12 minutes/day allowed with free heroku tier)
+        '''
+        #find latest data point
+        lastPointTS = datamanager.getMostRecentTSDataPoint()
+        print str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(lastPointTS)/1000))))
+                
+        #query etherios for all since
+        self.getD
+        self.getDataStreamPoints()
+        #add to database
         pass
 
     def parseAllAccountData(self):
@@ -131,12 +162,15 @@ class etheriosData:
         return self.deviceListInfo
     
     def getUserList(self):
+        #likely not possible directly, could take user login credentials, check if they have been used and validate locally
+            #if not used before attempt minimal etherios action, store if successful
         pass
 
     def updateStreamListDataPoints(self,lengthOfTime=0):
         for stream in self.streamListInfo:  #for every data stream, get list of points
             #get all in last week/day/hour (check database to figure out which?)
             #print stream
+
             streamPoints = self.getDataStreamPoints(stream[0],stream[1])
             #print streamPoints
             #store to database
@@ -150,7 +184,7 @@ class etheriosData:
                     print "Record exists...",
                 #recordItem = models.dataPointRecords(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
                 #db.session.add(recordItem)
-        datamanager.commitDB()
+            datamanager.commitDB()
             #devID,StreamID,TS,Data
             #with open("etheriosdatastore\ethStreamPoints_"+str(stream[0])+"_"+str(stream[1]),"w") as filewrt:
                 #for p in streamPoints:
@@ -224,5 +258,24 @@ class etheriosData:
         if len(message):
             webservice.send(message)
         statuscode, statusmessage, header = webservice.getreply()
+        print statusmessage
         response_body = webservice.getfile().read()
         return response_body
+
+'''
+auth = base64.encodestring("%s:%s"%(username,password))[:-1]
+webservice = httplib.HTTP("login.etherios.com",80)
+
+# to what URL to send the request with a given HTTP method
+webservice.putrequest("GET", "/ws/DeviceCore")
+
+# add the authorization string into the HTTP header
+webservice.putheader("Authorization", "Basic %s"%auth)
+webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
+webservice.endheaders()
+
+# get the response
+statuscode, statusmessage, header = webservice.getreply()
+response_body = webservice.getfile().read()
+
+'''

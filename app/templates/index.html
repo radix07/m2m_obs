@@ -7,25 +7,21 @@
 	<script type="text/javascript">	  								
 			function initialize() {
 			  var mapOptions = {
-				zoom: 3,
-				center: new google.maps.LatLng(30, -40)
-			  }
-			  var map = new google.maps.Map(document.getElementById('map-canvas'),
-											mapOptions);
+				//mapTypeId: google.maps.MapTypeId.ROADMAP
+				mapTypeId: google.maps.MapTypeId.HYBRID
+				
+				//zoom: 9,
+				//center: new google.maps.LatLng(30, -40)
+			  };
+			  var map = new google.maps.Map(document.getElementById('map-canvas'),mapOptions);
 
 			  setMarkers(map, devices);
 			}
-			/**		CHECK https://stackoverflow.com/questions/12350413/google-maps-auto-fit-auto-center-autozoom-doesnt-work
-			 * Data for the markers consisting of a name, a LatLng and a zIndex for
-			 * the order in which these markers should display on top of each
-			 * other.
-			 */
-			var devices = [
+			var devices = [			
 			{% for i in devList %}
 			  ['{{i[0]}}', {{i[1]}}, {{i[2]}}, 4,"controller/{{i[0]}}"],
-			{% endfor %}
+			{% endfor %}		
 			  //['SICoM A', 42.259636, -89.058201, 4,"A"],
-			  //['SICoM B', 48.259636, -88.058201, 5,"B"],
 			];
 			function setMarkers(map, locations) {
 			  var image = {
@@ -41,9 +37,12 @@
 				  coord: [1, 1, 1, 20, 18, 20, 18 , 1],
 				  type: 'poly'
 			  };
+			  var bounds = new google.maps.LatLngBounds();
 			  for (var i = 0; i < locations.length; i++) {
-				var beach = locations[i];
+				
+				var beach = locations[i];				
 				var myLatLng = new google.maps.LatLng(beach[1], beach[2]);
+				bounds.extend(myLatLng)
 				var infowindow = new google.maps.InfoWindow({
 					  content: beach[4]
 				});								
@@ -60,6 +59,8 @@
 					window.location.href = this.url;//file:///E:/_Engineering/WebServer/pgsicom/app/templates/
 				});
 			  }
+			  map.fitBounds(bounds);
+			  map.panToBounds(bounds);  
 			}
 			
 			google.maps.event.addDomListener(window, 'load', initialize);
@@ -174,51 +175,13 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="list-group">
+								{%for e in eventData%}
                                 <a href="#" class="list-group-item">
-                                    <i class="fa fa-comment fa-fw"></i> New Comment
-                                    <span class="pull-right text-muted small"><em>4 minutes ago</em>
+                                    <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
+                                    <span class="pull-right text-muted small"><em>{{e.timeStamp}}</em>
                                     </span>
                                 </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
-                                    <span class="pull-right text-muted small"><em>12 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
-                                    <span class="pull-right text-muted small"><em>27 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-tasks fa-fw"></i> New Task
-                                    <span class="pull-right text-muted small"><em>43 minutes ago</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
-                                    <span class="pull-right text-muted small"><em>11:32 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-bolt fa-fw"></i> Server Crashed!
-                                    <span class="pull-right text-muted small"><em>11:13 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-warning fa-fw"></i> Server Not Responding
-                                    <span class="pull-right text-muted small"><em>10:57 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-shopping-cart fa-fw"></i> New Order Placed
-                                    <span class="pull-right text-muted small"><em>9:49 AM</em>
-                                    </span>
-                                </a>
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-money fa-fw"></i> Payment Received
-                                    <span class="pull-right text-muted small"><em>Yesterday</em>
-                                    </span>
-                                </a>
+								{%endfor%}
                             </div>
                             <!-- /.list-group -->
                             <a href="#" class="btn btn-default btn-block">View All Alerts</a>

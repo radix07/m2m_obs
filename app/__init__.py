@@ -1,29 +1,28 @@
 import os
-from flask import Flask
+from flask import Flask, Blueprint
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
 
-#from flask.ext.openid import OpenID
 from config import basedir
 
-
 app = Flask(__name__)
+
+
 app.config.from_object('config')
 db = SQLAlchemy(app)
+
+from localcontrolview import local_api
+try:
+    os.environ['DATABASE_URL']
+except:
+    print "local dev"
+    app.register_blueprint(local_api)
+
 
 lm = LoginManager()
 lm.init_app(app)
 lm.login_view = 'login'
 
-#lm.login_message = lazy_gettext('Please log in to access this page.')
-#oid = OpenID(app, os.path.join(basedir, 'tmp'))
-
-try:
-    #app.config['SQLALCHEMY_DATABASE_URI'] = 
-    os.environ['DATABASE_URL']
-    
-except:
-    print "local dev"
 
     #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test.db')
@@ -32,9 +31,12 @@ except:
 if not app.debug and os.environ.get('HEROKU') is None:
     import logging
     from logging.handlers import RotatingFileHandler
-    if not os.path.exists("tmp/microblog.log"):
-        os.makedirs("tmp/")
-    file_handler = RotatingFileHandler('tmp/microblog.log', 'a+', 1 * 1024 * 1024, 10)
+    try:
+        if not os.path.exists("tmp/log.log"):
+            os.makedirs("tmp/")
+    except:
+        pass
+    file_handler = RotatingFileHandler('tmp/log.log', 'a+', 1 * 1024 * 1024, 10)
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.addHandler(file_handler)

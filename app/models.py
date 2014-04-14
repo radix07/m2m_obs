@@ -28,13 +28,14 @@ class device(db.Model):
     location                = db.Column(db.SmallInteger, default = ROLE_USER)
     devConnectwareId        = db.Column(db.String(64))  #unique??
     devMac                  = db.Column(db.String(64))
-    dpGlobalIp              = db.Column(db.String(64))
     dpConnectionStatus      = db.Column(db.String(64))
     dpGlobalIp              = db.Column(db.String(64))
+    dpLastDisconnectTime    = db.Column(db.String(64))
     dpLastKnownIp           = db.Column(db.String(64))
     dpMapLat                = db.Column(db.String(64))
     dpMapLong               = db.Column(db.String(64))
-    dpLastDisconnectTime    = db.Column(db.String(64))
+    localIp                 = db.Column(db.String(64))
+    localController         = db.Column(db.String(64))
     #firmware
     #grpID
     #cstID
@@ -77,10 +78,10 @@ class localControllerDataItems(db.Model):
     max          = db.Column(db.String(64))
     scaling      = db.Column(db.String(64))
     isfloat      = db.Column(db.String(64))
-    issigned      = db.Column(db.String(64))
-    update      = db.Column(db.String(64))
-    menu      = db.Column(db.String(64))
-    parent      = db.Column(db.String(64))
+    issigned     = db.Column(db.String(64))
+    update       = db.Column(db.String(64))
+    menu         = db.Column(db.String(64))
+    parent       = db.Column(db.String(64))
 
 
 class Post(db.Model):
