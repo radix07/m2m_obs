@@ -92,6 +92,7 @@ def parseDeviceListing(ds):
        </DataPoint>'''
 
 def parseDataStreamXML(ds):
+    print "DataStreamParser Len :\n",len(ds)
     xmldoc = minidom.parseString(ds)
     node = xmldoc.documentElement
     itemlist = xmldoc.getElementsByTagName('DataPoint') 
@@ -100,7 +101,6 @@ def parseDataStreamXML(ds):
         ts = s.getElementsByTagName("timestamp")
         val = s.getElementsByTagName("data")
         valueList.append([ts[0].firstChild.nodeValue,val[0].firstChild.nodeValue])
-    
     return valueList
 
 

@@ -1,4 +1,6 @@
 from app import db
+import sqlalchemy
+from sqlalchemy import func
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -36,6 +38,10 @@ class device(db.Model):
     dpMapLong               = db.Column(db.String(64))
     localIp                 = db.Column(db.String(64))
     localController         = db.Column(db.String(64))
+    created_on              = db.Column(db.DateTime, default=db.func.now())
+    updated_on              = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    
+
     #firmware
     #grpID
     #cstID
@@ -52,8 +58,11 @@ class dataPointRecords(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     devID = db.Column(db.String(64), unique = False)
     streamID = db.Column(db.String(64), unique = False)
-    timeStamp = db.Column(db.String(64), unique = False)
+    #timeStamp = db.Column(db.String(64), unique = False)
+    timeStamp   = db.Column(db.Integer, unique = False)
     datapoint = db.Column(db.String(64), unique = False)
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
 class latestDataStreamPoints(db.Model):
     
@@ -61,9 +70,13 @@ class latestDataStreamPoints(db.Model):
 
     devID       = db.Column(db.String(64), unique = False)
     streamID    = db.Column(db.String(64), unique = False)
-    timeStamp   = db.Column(db.String(64), unique = False)
+    #timeStamp   = db.Column(db.String(64), unique = False)
+    timeStamp   = db.Column(db.Integer, unique = False)
     datapoint   = db.Column(db.String(64), unique = False)
     units       = db.Column(db.String(64), unique = False)
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+
 
 class localControllerDataItems(db.Model):
     id           = db.Column(db.Integer, primary_key = True)
@@ -82,13 +95,5 @@ class localControllerDataItems(db.Model):
     update       = db.Column(db.String(64))
     menu         = db.Column(db.String(64))
     parent       = db.Column(db.String(64))
-
-
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    body = db.Column(db.String(140))
-    timestamp = db.Column(db.DateTime)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-
-    def __repr__(self):
-        return '<Post %r>' % (self.body)
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())

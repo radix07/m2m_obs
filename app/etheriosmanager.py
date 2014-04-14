@@ -25,7 +25,8 @@ class etheriosData:
 
     def tryLogin(self,un,pw):
         self.auth = base64.encodestring("%s:%s"%(un,pw))[:-1]        
-        response_body = self.genericWebServiceCall("/DeviceCore","GET")
+        #response_body = self.genericWebServiceCall("/DeviceCore","GET")
+        response_body = self.initFromDB()
         print un,pw, self.auth
         print "Result:",response_body
         if "Bad credentials" in response_body:
@@ -37,12 +38,13 @@ class etheriosData:
             password = pw
             user = datamanager.addOrGetUser(username,password)                        
             self.ethUser = user
-            self.initFromDB()
+            
             return user
     
     def initFromDB(self):
         #result = datamanager.getDeviceList()
-        self.getNewDevices()
+        if self.getNewDevices() is None:
+            return "Bad credentials"
         '''
         if len(result) ==0:
             print "No Devices in database"
@@ -80,6 +82,7 @@ class etheriosData:
             #should extend to recent datapoints, and get latest if stale (older than.. 1 day/hour??)
             #print "Len:",len(result),result[0].id, result[0].devID,result[0].datapoint,result[0].timeStamp
             pass
+        return "Data Initialzed!"
 
     def printFormattedNestedArray(self,ar,head=""):
         print 
@@ -92,9 +95,11 @@ class etheriosData:
         print "-"*100
     
     def getNewDevices(self):
-        self.updateDeviceList()
+        return self.updateDeviceList()
+
     def getNewStreams(self):
-        pass
+        self.updateLatestStreamValues()
+
     def getRecentDataPoints(self):
         '''
             Will be run periodically as scheduled task or on-demad (force update/refresh) to update new Etherios data points
@@ -103,13 +108,13 @@ class etheriosData:
         '''
         #find latest data point
         lastPointTS = datamanager.getMostRecentTSDataPoint()
-        print str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(lastPointTS)/1000))))
+        print "LastSampleDate:",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(lastPointTS)/1000))))
+        print "LastSampleDate:",lastPointTS
                 
         #query etherios for all since
-        self.getD
-        self.getDataStreamPoints()
+        #self.updateStreamListDataPoints(fromDate=lastPointTS)
+        self.updateStreamListDataPoints()
         #add to database
-        pass
 
     def parseAllAccountData(self):
         #updateDeviceList()
@@ -133,6 +138,10 @@ class etheriosData:
 
     def updateDeviceList(self):
         response_body = self.genericWebServiceCall("/DeviceCore","GET")
+                
+        if "Bad credentials" in response_body:
+            return None
+
         self.deviceListInfo = xmlParse.parseDeviceListing(response_body)
         #([connectID,lat,longit,group,connected,globID,disconnectTime ])
         for i in self.deviceListInfo:
@@ -161,39 +170,48 @@ class etheriosData:
         
         return self.deviceListInfo
     
-    def getUserList(self):
-        #likely not possible directly, could take user login credentials, check if they have been used and validate locally
-            #if not used before attempt minimal etherios action, store if successful
-        pass
+    def updateStreamListDataPoints(self,fromDate=0):
+        #get data
+        #store data
+        endTimer=0     
+        for stream in self.streamListInfo:  #for every data stream, get list of points                
+            if not fromDate:
+                lastPointTS = datamanager.getMostRecentTSDataPoint(stream[0],stream[1])
+            else:
+                lastPointTS = fromDate
+            #if not lastPointTS:
+                #time.sleep(100)
+            print lastPointTS 
 
-    def updateStreamListDataPoints(self,lengthOfTime=0):
-        for stream in self.streamListInfo:  #for every data stream, get list of points
-            #get all in last week/day/hour (check database to figure out which?)
-            #print stream
+            startTimer = time.time()        #prevent oversampling Etherios
+            if startTimer - endTimer < 1:
+                print "Fast Sample, Add Delay...",startTimer - endTimer
+                time.sleep(.5)                    
+            else:
+                print "Sample Time Delta:", str(startTimer - endTimer)
 
-            streamPoints = self.getDataStreamPoints(stream[0],stream[1])
-            #print streamPoints
-            #store to database
-            for p in streamPoints:
-                #check if exists
-                result = datamanager.getDataPoint(stream[0],stream[1],p[0],p[1])
-                if result is None:
-                    print "New Data Point Record: ",stream,p
-                    datamanager.addDataPoint(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
-                else:
-                    print "Record exists...",
-                #recordItem = models.dataPointRecords(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
-                #db.session.add(recordItem)
+            if lastPointTS:
+                streamPoints = self.getDataStreamPoints(stream[0],stream[1],startTime=lastPointTS)
+            else:
+                streamPoints = self.getDataStreamPoints(stream[0],stream[1])
+
+            if len(streamPoints) == 0:
+                print "No new data"
+            else:
+                for p in streamPoints:                   
+                    result = datamanager.getDataPoint(stream[0],stream[1],p[0],p[1])
+                    if result is None:                        
+                        datamanager.addDataPoint(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
+                        print "Insert New Data Point Record: ",stream,p                                    
             datamanager.commitDB()
-            #devID,StreamID,TS,Data
-            #with open("etheriosdatastore\ethStreamPoints_"+str(stream[0])+"_"+str(stream[1]),"w") as filewrt:
-                #for p in streamPoints:
-                    #filewrt.write(str(p[0])+","+str(p[1])+"\n")
-
+            endTimer = startTimer
 
 ##Get stream data for system with latest data, store to database or update if item already exists
     def updateLatestStreamValues(self):
         response_body = self.genericWebServiceCall("/DataStream/","GET")
+        if "Bad credentials" in response_body:
+            return None
+
         self.streamListInfo = xmlParse.parseStreamListingXML(response_body)
         #(devID,StreamID,TS,datapoint)
         for i in self.streamListInfo:
@@ -212,16 +230,29 @@ class etheriosData:
 
         return self.streamListInfo
 
-    def getDataStreamPoints(self,devID,dataStr,size=0,startTime=0,endTime=0):
+    def getDataStreamPoints(self,devID,dataStr,size=0,startTime=0,endTime=0):        
+        if devID == "00000000-00000000-00042DFF-FF0418FB":
+            devID = "0000000-00000000-00042DFF-FF0418FB"    #temp fix for embedded id error
+
         if startTime and endTime:
-            # ws/DataPoint/device1/temp?startTime=2012-07-18T12:00:00.000Z&endTime=2012-07-18T12:30:00.000Z
-            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}?startTime={2}".format(devID,dataStr,startTime),"GET")
+            # ws/DataPoint/device1/temp?startTime=2012-07-18T12:00:00.000Z&endTime=2012-07-18T12:30:00.000Z            
+            call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,endTime)
+            print "Start/End time thresh",call            
+            response_body = self.genericWebServiceCall(call,"GET")
+        elif startTime:
+            call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,str(int(time.time()*1000)))
+            print "Start time thresh:",call
+            response_body = self.genericWebServiceCall(call,"GET")            
         elif size:
             response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}?size={2}".format(devID,dataStr,size),"GET")
         else:
-            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}".format(devID,dataStr),"GET")
-        #print response_body
-        return xmlParse.parseDataStreamXML(response_body)
+            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}".format(devID,dataStr),"GET")                     
+        if "Bad credentials" in response_body:
+            return None            
+            
+        #print "RE Body:",response_body
+        re = xmlParse.parseDataStreamXML(response_body)
+        return re
 
     def getDeviceSettings(self,devID):
         message = """<sci_request version="1.0"> 

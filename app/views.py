@@ -1,11 +1,10 @@
 import os
 from flask import render_template, flash, session, request, g, jsonify
 from flask import Flask,abort, redirect, url_for
-#from jinja2 import TemplateNotFound
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
-from datetime import datetime
+from datetime import datetime,timedelta
 
 from app import app, db, lm
 
@@ -16,6 +15,7 @@ import time
 import etheriosmanager
 import datamanager
 
+app.permanent_session_lifetime = timedelta(minutes=30)
 
 if not os.environ.get('DATABASE_URL') is None:
     localFrontEnd = 0
@@ -101,14 +101,15 @@ def testPage():
     #events = datamanager.getAllEventOccurances()
     #for e in events:
         #print e.datapoint,e.timeStamp
-    etherios.getRecentDataPoints()
-
-    #if etherios.tryLogin("123","456"):
-        #pass
-    #else:
-        #return redirect('logout')
-    #app.logger.debug()
-    #app.logger.debug(etherios.tryLogin("TestMe","Password_123"))
+    #etherios.getNewDevices()
+    #etherios.getNewStreams()
+    
+    #etherios.getRecentDataPoints()
+    #datamanager.normalizeDataStreamRecords()
+    #datamanager.normalizeDataPointRecords()
+    etherios.updateStreamListDataPoints()
+                                              
+    #datamanager.getMostRecentTSDataPoint("00080003-00000000-030001F1-E056EE95","Hours")
     
     #app.logger.debug(etherios.updateLatestStreamValues())    
     #app.logger.debug(etherios.updateStreamListDataPoints())
@@ -123,14 +124,9 @@ def controllers():
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
-    streamList = datamanager.getAllDatapoints(deviceID,streamID)
-    
+    streamList = datamanager.getAllDatapoints(deviceID,streamID)    
     for st in streamList:
-        if st.timeStamp.isdigit():
-            st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
-        else:
-            st.timeStamp = "--"
-            st.datapoint = "--"
+        st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
 
     return render_template('dataPointList.html',   #dataPoint
                            user= 'Ryan',
@@ -148,11 +144,8 @@ def controller(deviceID):
     streamList = datamanager.getStreamListByDeviceID(deviceID)
     for st in streamList:
         print st.timeStamp
-        if st.timeStamp.isdigit():
-            st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
-        else:
-            st.timeStamp = "--"
-            st.datapoint = "--"
+        st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
+
     #app.logger.debug(streamList)
     return render_template('device.html',
                            user= 'Ryan',
