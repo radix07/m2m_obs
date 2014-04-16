@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("jquery", "1.6.1");
+      google.load('visualization', '1', {packages: ['table']});
+    </script>
+    <script type="text/javascript">
+
+    function drawVisualization(dataFromAjax) {
+      var data = google.visualization.arrayToDataTable(dataFromAjax);
+      visualization = new google.visualization.Table(document.getElementById('table'));
+      visualization.draw(data);
+    }
+
+    function makeAjaxCall() {
+      $.ajax({url:'get_data',
+			  //dataType:"json",
+              data: {},
+              success: function(responseData) {
+                         // eval just for testing - make safer
+                         var arrayForGviz = eval("(" + responseData + ")");
+                         drawVisualization(arrayForGviz);
+                       }
+        });
+    }
+    </script>
+  </head>
+  <body>
+    <input type="button" onclick="makeAjaxCall();return false;" value="Click to get data"></input>
+    <div id="table"></div>
+  </body>
+</html>

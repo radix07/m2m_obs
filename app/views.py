@@ -31,7 +31,6 @@ etherios = etheriosmanager.etheriosData()
 @lm.user_loader
 def load_user(id):    
     return etherios.ethUser
-    #return User.query.get(int(id))
 
 @app.before_request
 def before_request():
@@ -57,6 +56,7 @@ def login():
         
         #add if new user/
         login_user(registered_user, remember = form.remember_me.data)
+        flash('You were successfully logged in')
         return redirect('/index')
 
     return render_template('login.html', 
@@ -67,6 +67,7 @@ def login():
 @login_required
 def logout():
     logout_user()
+    flash("User logged out")
     return redirect('index')
 
 
@@ -75,16 +76,21 @@ def logout():
 @app.route('/')
 @login_required
 def index_page():
-    app.logger.debug(etherios.deviceListInfo)
+    #app.logger.debug(etherios.deviceListInfo)
+    #flash('Index Page TEST')
+    etherios.updateDeviceList()
+    ed = datamanager.getAllEventOccurances()
+    for e in ed:
+        print e.devID,e.streamID,e.datapoint,e.timeStamp
     return render_template('index.html',user= 'Ryan',
                            devList=etherios.deviceListInfo,
-                           eventData=datamanager.getAllEventOccurances(),
+                           eventData=ed,
                            local=localFrontEnd,
                            datatable=1)
-
 @app.route('/clean')
 @login_required
 def cleanDB():
+    flash('Clean Database Run')
     etherios.initFromDB()
     datamanager.removeAllDevices()
     return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
@@ -95,18 +101,42 @@ def forceUpdate():
     etherios.initFromDB()
     return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
 
+@app.route('/ctest.html')
+def chartTest():
+    return render_template('chartTester.html')
+
+@app.route('/get_data')
+def get_data():
+    print ":TEST"
+    #print jsonify(results =1+2)
+
+    return '''{
+              "cols": [
+                    {"id":"","label":"Topping","pattern":"","type":"string"},
+                    {"id":"","label":"Slices","pattern":"","type":"number"}
+                  ],
+              "rows": [
+                    {"c":[{"v":"Mushrooms","f":null},{"v":3,"f":null}]},
+                    {"c":[{"v":"Onions","f":null},{"v":1,"f":null}]},
+                    {"c":[{"v":"Olives","f":null},{"v":1,"f":null}]},
+                    {"c":[{"v":"Zucchini","f":null},{"v":1,"f":null}]},
+                    {"c":[{"v":"Pepperoni","f":null},{"v":2,"f":null}]}
+                  ]
+            }'''
+    #return "[['Table1','Table2','Table3'],\
+            #['123','ACE','10'],\            
+            #['61109','PG','ENG']]"
+
 @app.route('/test.html')
 def testPage():
+    flash('Searching for new data')
     #app.logger.debug(datamanager.getAllEventOccurances())
     #events = datamanager.getAllEventOccurances()
-    #for e in events:
-        #print e.datapoint,e.timeStamp
-    #etherios.getNewDevices()
-    #etherios.getNewStreams()
-    
+
     #etherios.getRecentDataPoints()
     #datamanager.normalizeDataStreamRecords()
     #datamanager.normalizeDataPointRecords()
+    etherios.updateLatestStreamValues()
     etherios.updateStreamListDataPoints()
                                               
     #datamanager.getMostRecentTSDataPoint("00080003-00000000-030001F1-E056EE95","Hours")
@@ -119,17 +149,24 @@ def testPage():
 @app.route('/controllers.html')
 @login_required
 def controllers():
-    return render_template('controllers.html',user= 'Ryan',devList=etherios.deviceListInfo,datatable=1)
+    return render_template('controllers.html',user= 'Ryan',
+                           devList=etherios.deviceListInfo,
+                           eventData=datamanager.getAllEventOccurances(),
+                           datatable=1)
 
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
-    streamList = datamanager.getAllDatapoints(deviceID,streamID)    
-    for st in streamList:
+    dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)    
+    for st in dataPointList:
         st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
+    streamList = datamanager.getStreamListByDeviceID(deviceID)
+    for st in streamList:
+        st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
 
     return render_template('dataPointList.html',   #dataPoint
                            user= 'Ryan',
+                           dataPointList=dataPointList,
                            streamList=streamList,
                            devID = deviceID,
                            stID = streamID,
@@ -143,7 +180,6 @@ def controller(deviceID):
     #get all data from db with deviceID
     streamList = datamanager.getStreamListByDeviceID(deviceID)
     for st in streamList:
-        print st.timeStamp
         st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
 
     #app.logger.debug(streamList)

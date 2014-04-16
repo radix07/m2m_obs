@@ -65,11 +65,13 @@
                         <div class="panel-body">
                             <div class="list-group">
 								{%for e in eventData%}
+								{%if devID == e.devID%}
                                 <a href="#" class="list-group-item">
                                     <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
                                     <span class="pull-right text-muted small"><em>{{e.timeStamp}}</em>
                                     </span>
                                 </a>
+								{%endif%}
 								{%endfor%}							
                             </div>
                             <!-- /.list-group -->

@@ -10,6 +10,15 @@
 					<h3 class="panel-title">Sign In to PG Cloud</h3>
 				</div>
 				<div class="panel-body">
+				{% with messages = get_flashed_messages() %}
+					{% if messages %}
+					<ul class=flashes>
+						{% for message in messages %}
+							<li>{{ message }}</li>
+						{% endfor %}
+					</ul>
+					{% endif %}
+				{% endwith %}
 					<form class="form" action="" method="post" name="login">
 							{{form.hidden_tag()}}
 						<fieldset>

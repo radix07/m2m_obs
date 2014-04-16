@@ -42,6 +42,7 @@
     <Compile Include="app\__init__.py" />
     <Compile Include="config.py" />
     <Compile Include="run.py" />
+    <Compile Include="tests.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="app" />

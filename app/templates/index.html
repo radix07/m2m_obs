@@ -18,21 +18,20 @@
 			  setMarkers(map, devices);
 			}
 			var devices = [			
-			{% for i in devList %}
-			  ['{{i[0]}}', {{i[1]}}, {{i[2]}}, 4,"controller/{{i[0]}}"],
+			{% for i in devList %}			
+			  ['{{i[0]}}', {{i[1]}}, {{i[2]}}, 4,"controller/{{i[0]}}",{{i[4]}}],
 			{% endfor %}		
 			  //['SICoM A', 42.259636, -89.058201, 4,"A"],
 			];
 			function setMarkers(map, locations) {
 			  var image = {
-				url: '../static/favicon.ico',
-				// This marker is 20 pixels wide by 32 pixels tall.
-				size: new google.maps.Size(32, 32),
-				// The origin for this image is 0,0.
-				origin: new google.maps.Point(0,0),
-				// The anchor for this image is the base of the flagpole at 0,32.
-				anchor: new google.maps.Point(0, 32)
+				url: '../static/favicon.ico',				
+				size: new google.maps.Size(32, 32),	// This marker is 20 pixels wide by 32 pixels tall.
+				origin: new google.maps.Point(0,0),// The origin for this image is 0,0.				
+				anchor: new google.maps.Point(0, 32)// The anchor for this image is the base of the flagpole at 0,32.
 			  };
+			  //var image1 = {url: '../static/markers/orange_MarkerA.png'};
+			  
 			  var shape = {
 				  coord: [1, 1, 1, 20, 18, 20, 18 , 1],
 				  type: 'poly'
@@ -45,11 +44,22 @@
 				bounds.extend(myLatLng)
 				var infowindow = new google.maps.InfoWindow({
 					  content: beach[4]
-				});								
+				});
+				if (locations[i][5]){
+					var pinColor = "7ab800";
+				}
+				else{
+					var pinColor = "FE7569";
+				}
+				var timage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+										new google.maps.Size(21, 34),
+										new google.maps.Point(0,0),
+										new google.maps.Point(10, 34));								
+				
 				var marker = new google.maps.Marker({
 					position: myLatLng,
 					map: map,
-					icon: image,
+					icon: timage,
 					shape: shape,
 					title: beach[0],
 					zIndex: beach[3],
@@ -69,7 +79,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
+                    <h1 class="page-header">Fleet Dashboard</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -78,7 +88,7 @@
                 <div class="col-lg-8">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i>Fleet Monitoring
+                            <i class="fa fa-bars fa-fw"></i>Fleet Monitoring
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -121,7 +131,7 @@
                     <!-- /.panel -->
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Device Details
+                            <i class="fa fa-bars fa-fw"></i> Device Details
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -176,7 +186,7 @@
                         <div class="panel-body">
                             <div class="list-group">
 								{%for e in eventData%}
-                                <a href="#" class="list-group-item">
+                                <a href="controller/{{ e.devID }}" class="list-group-item">								
                                     <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
                                     <span class="pull-right text-muted small"><em>{{e.timeStamp}}</em>
                                     </span>

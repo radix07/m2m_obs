@@ -20,11 +20,10 @@ def getDeviceList():
 def getDeviceByID(id):
     return models.device.query.filter_by(devConnectwareId=id).first()
 
-def getStreamListByDeviceID(id):
-    if id[:4] == "0000":    #truncate zeros to account for missing ones if they exist
-        id = id[4:len(id)]
+def getStreamListByDeviceID(devID):
+    devID,set = fixDevID(devID)
     #return models.latestDataStreamPoints.query.filter_by(devID=id).all()
-    return models.latestDataStreamPoints.query.filter(models.latestDataStreamPoints.devID.ilike("%"+id.lower()+"%")).all()
+    return models.latestDataStreamPoints.query.filter(models.latestDataStreamPoints.devID.ilike("%"+devID.lower()+"%")).all()
     #return models.latestDataStreamPoints.query.filter(func.lower(models.latestDataStreamPoints.devID) == func.lower(id)).all()
     #user = models.User.                   query.filter(func.lower(User.username                      ) == func.lower("GaNyE")).first()
 def addOrGetUser(username,password):
@@ -36,6 +35,7 @@ def addOrGetUser(username,password):
 
 ##Stream
 def getStreamListByDeviceIDAndStreamID(did,sid):
+    did,set = fixDevID(did)
     return models.latestDataStreamPoints.query.filter_by(streamID=sid,devID=did).first()
 def getStreamList():
     return models.latestDataStreamPoints.query.all()
@@ -44,16 +44,18 @@ def getStreamListByStreamID(id):
 
 ##DataPoints
 def getDataPoint(devID,streamID,timeStamp,datapoint):
+    devID,set = fixDevID(devID)
     return models.dataPointRecords.query.filter_by(devID=devID,streamID=streamID,timeStamp=timeStamp,datapoint=datapoint).first()
 
 def getMostRecentTSDataPoint(devID=0,streamID=0):
+    devID,set = fixDevID(devID)
     if devID and streamID:
         try:
-            lastrecord = db.session.query(models.dataPointRecords).filter(models.dataPointRecords.devID==devID.strip().upper(),models.dataPointRecords.streamID==streamID).order_by(models.dataPointRecords.timeStamp.desc()).first()
-            print devID,streamID,":",lastrecord.timeStamp
+            lastrecord = db.session.query(models.dataPointRecords).filter(models.dataPointRecords.devID==devID.strip(),models.dataPointRecords.streamID==streamID).order_by(models.dataPointRecords.timeStamp.desc()).first()
+            print devID,streamID,":",lastrecord.timeStamp,str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(lastrecord.timeStamp)/1000))))
             return lastrecord.timeStamp            
         except Exception, e:
-            print "None exist return 0, e:",e
+            #print "None exist returning 0 TS, e:",e
             return 0
     else:
         return db.session.query(func.max(models.dataPointRecords.timeStamp)).all()[0][0]
@@ -61,14 +63,16 @@ def getMostRecentTSDataPoint(devID=0,streamID=0):
 def getAnyDatapoint():
     return models.dataPointRecords.query.limit(1).all()
 
-def getAllDatapoints(devID,streamID):
-    if devID[:4] == "0000":    #truncate zeros to account for missing ones if they exist
-        devID = devID[4:len(devID)]
+def getAllDatapoints():
+    return models.dataPointRecords.query.order_by(models.dataPointRecords.timeStamp.desc()).all()
+
+def getAllDatapointsByID(devID,streamID):
+    devID,set = fixDevID(devID)
     return models.dataPointRecords.query.filter(models.dataPointRecords.devID.ilike("%"+devID.lower()+"%"),
                                                 models.dataPointRecords.streamID==streamID).all()
     #return models.dataPointRecords.query.filter_by(streamID=streamID,devID=devID).all()
 def getAllEventOccurances(count=10):
-    print "Get Event Occurances"
+    #print "Get Event Occurances"
     return formatEpochTimeofList(models.dataPointRecords.query.filter( models.dataPointRecords.streamID=="EventList").order_by(models.dataPointRecords.timeStamp.desc()).limit(10))
 
 
@@ -88,8 +92,10 @@ def addNewDevice(devConnectwareId,dpMapLat,dpMapLong,dpConnectionStatus,dpGlobal
     db.session.commit()
     print "Commit Change"
     return recordItem
-def addNewStream(devID,streamID,timeStamp,datapoint,commit=0):
+def addNewStream(devID,streamID,timeStamp,datapoint,commit=0):    
+    devID,set = fixDevID(devID)
     recordItem = models.latestDataStreamPoints(devID=devID,streamID=streamID,timeStamp =timeStamp ,datapoint=datapoint)
+
     try:
         db.session.save(recordItem)
     except:
@@ -130,9 +136,7 @@ def commitDB():
     db.session.commit()
 ##############Utility#################
 def formatEpochTimeofList(list):
-    print "Format Epoch"
     for st in list:
-        print st.timeStamp
         try:
             if st.timeStamp.isdigit():
                 st.timeStamp = time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000)))
@@ -141,23 +145,22 @@ def formatEpochTimeofList(list):
     return list
 
 def fixDevID(devID):
-    set=0
+    set=0    
+    if "python" in devID:       #special test case
+        return devID,set    
     devID = devID.upper()
 
-    if "PYTHON" in devID:
-        devID = "PYTHONPC1_RYAN"
-        set=1
-    elif devID.find("-") >8:        
+    if devID.find("-") >8:        
         while devID.find("-") >7:
-            print devID.find("-")
+            #print devID.find("-")
             devID= devID[1:len(devID)]
     elif devID[8] != "-": #fix missing 0 prefix in device
-        print devID
+        #print devID
         devID = "0"+devID
         set=1
 
     if devID[0] == "0" and devID[len(devID)-1].islower():     #fix lowercase device id
-        print devID
+        #print devID
         devID = devID.upper()
         set=1
     return devID,set

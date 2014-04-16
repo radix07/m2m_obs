@@ -52,12 +52,15 @@
                     </a>
                     <ul class="dropdown-menu dropdown-alerts">
                         <li>
-                            <a href="#">
-                                <div>
-                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
-                                    <span class="pull-right text-muted small">4 minutes ago</span>
-                                </div>
-                            </a>
+						{% with messages = get_flashed_messages(with_categories=true)  %}
+							{% if messages %}
+							<ul class=flashes>
+								{% for category,message in messages %}
+									<i class="fa fa-upload fa-fw"></i>{{category}} -{{ message }}								
+								{% endfor %}
+							</ul>
+							{% endif %}
+						{% endwith %}						
                         </li>
                         <li class="divider"></li>
                         <li>
@@ -112,7 +115,7 @@
                     </li>
 					{% if local %}
                     <li>
-                        <a href="{{request.script_root }}/local"><i class="fa fa-laptop fa-fw"></i> Local</a>
+                        <a href="{{request.script_root }}/local"><i class="fa fa-keyboard-o fa-fw"></i> Local</a>
                     </li>					
 					{% endif %}
                     <li>
@@ -128,8 +131,15 @@
                         <a href="{{request.script_root }}/controllers.html"><i class="fa fa-dashboard fa-fw"></i> Controllers</a>
                     </li>
                     <li>
-                        <a href="{{request.script_root }}/settings.html"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Statistics </a>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-folder fa-fw"></i> Reporting </a>
                     </li>					
+                    <li>
+                        <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                    </li>					
+					
                 </ul>
                 <!-- /#side-menu -->
             </div>

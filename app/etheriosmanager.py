@@ -27,7 +27,7 @@ class etheriosData:
         self.auth = base64.encodestring("%s:%s"%(un,pw))[:-1]        
         #response_body = self.genericWebServiceCall("/DeviceCore","GET")
         response_body = self.initFromDB()
-        print un,pw, self.auth
+        print "UserName:",un," Password:",pw,"  AutKey:", self.auth
         print "Result:",response_body
         if "Bad credentials" in response_body:
             self.auth = base64.encodestring("%s:%s"%(self.username,self.password))[:-1]
@@ -174,37 +174,42 @@ class etheriosData:
         #get data
         #store data
         endTimer=0     
+        newDataPointCounter=0
         for stream in self.streamListInfo:  #for every data stream, get list of points                
             if not fromDate:
                 lastPointTS = datamanager.getMostRecentTSDataPoint(stream[0],stream[1])
             else:
                 lastPointTS = fromDate
-            #if not lastPointTS:
-                #time.sleep(100)
-            print lastPointTS 
-
+            
             startTimer = time.time()        #prevent oversampling Etherios
-            if startTimer - endTimer < 1:
-                print "Fast Sample, Add Delay...",startTimer - endTimer
+            if startTimer - endTimer < 1:#print "Fast Sample, Add Delay...",startTimer - endTimer
                 time.sleep(.5)                    
-            else:
-                print "Sample Time Delta:", str(startTimer - endTimer)
+            else:pass#print "Sample Time Delta:", str(startTimer - endTimer)
 
             if lastPointTS:
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1],startTime=lastPointTS)
             else:
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1])
-
+            commitFlag=0
             if len(streamPoints) == 0:
-                print "No new data"
-            else:
+                print "\tNo Etherios data"
+                #Stream exists, but no data points! Should this stream be deleted from Etherios????
+                #OR.....Zero results depending responses data
+
+            else: #print "Processing ",len(streamPoints)," Data Points"
                 for p in streamPoints:                   
                     result = datamanager.getDataPoint(stream[0],stream[1],p[0],p[1])
-                    if result is None:                        
+                    if result is None:
+                        commitFlag = 1
                         datamanager.addDataPoint(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
-                        print "Insert New Data Point Record: ",stream,p                                    
-            datamanager.commitDB()
+                        newDataPointCounter+=1
+                        #app.logger.debug("New Data Point Record: ",stream,p)
+            if commitFlag:
+                datamanager.commitDB()
+            else:
+                print "\tNo new data"
             endTimer = startTimer
+        print "Data Points Added:",newDataPointCounter
 
 ##Get stream data for system with latest data, store to database or update if item already exists
     def updateLatestStreamValues(self):
@@ -231,17 +236,17 @@ class etheriosData:
         return self.streamListInfo
 
     def getDataStreamPoints(self,devID,dataStr,size=0,startTime=0,endTime=0):        
-        if devID == "00000000-00000000-00042DFF-FF0418FB":
-            devID = "0000000-00000000-00042DFF-FF0418FB"    #temp fix for embedded id error
+        #if devID == "00000000-00000000-00042DFF-FF0418FB":
+            #devID = "0000000-00000000-00042DFF-FF0418FB"    #temp fix for embedded id error
 
         if startTime and endTime:
             # ws/DataPoint/device1/temp?startTime=2012-07-18T12:00:00.000Z&endTime=2012-07-18T12:30:00.000Z            
             call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,endTime)
-            print "Start/End time thresh",call            
+            print "\tStart/End time thresh",call            
             response_body = self.genericWebServiceCall(call,"GET")
         elif startTime:
             call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,str(int(time.time()*1000)))
-            print "Start time thresh:",call
+            print "\tStart time thresh:",call
             response_body = self.genericWebServiceCall(call,"GET")            
         elif size:
             response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}?size={2}".format(devID,dataStr,size),"GET")
@@ -276,7 +281,7 @@ class etheriosData:
         webservice.send(message)
 
     def genericWebServiceCall(self,request,getpost,message=""):
-        print request
+        #print request
         webservice = httplib.HTTP("login.etherios.com",80)
         # to what URL to send the request with a given HTTP method
         webservice.putrequest(getpost, "/ws"+request)
@@ -289,7 +294,7 @@ class etheriosData:
         if len(message):
             webservice.send(message)
         statuscode, statusmessage, header = webservice.getreply()
-        print statusmessage
+        #print statusmessage
         response_body = webservice.getfile().read()
         return response_body
 

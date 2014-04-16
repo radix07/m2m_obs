@@ -24,13 +24,14 @@ lm.init_app(app)
 lm.login_view = 'login'
 
 
-    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-    #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test.db')
-    #SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+#SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test.db')
+#SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
-if not app.debug and os.environ.get('HEROKU') is None:
+if not app.debug and os.environ.get('HEROKU') is None:  #release
     import logging
     from logging.handlers import RotatingFileHandler
+    from logging.handlers import SMTPHandler
     try:
         if not os.path.exists("tmp/log.log"):
             os.makedirs("tmp/")
@@ -43,7 +44,7 @@ if not app.debug and os.environ.get('HEROKU') is None:
     app.logger.setLevel(logging.INFO)
     app.logger.info('microblog startup')
 
-if os.environ.get('HEROKU') is not None:
+if os.environ.get('HEROKU') is not None:        #heroku
     import logging
     stream_handler = logging.StreamHandler()
     app.logger.addHandler(stream_handler)
