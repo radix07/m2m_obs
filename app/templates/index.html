@@ -1,10 +1,8 @@
 <!-- extend base layout -->
 {% extends "base.html" %}
 {% block content %}
-	<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/src/markerclusterer.js"></script>
-	<script type="text/javascript"
-	  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdnC1PD8QZ21nNokwwa5Uanimg3_z7HPY&sensor=false">
-	</script>
+	<!--<script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclustererplus/src/markerclusterer.js"></script>-->
+	<script type="text/javascript"src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAdnC1PD8QZ21nNokwwa5Uanimg3_z7HPY&sensor=false"></script>
 	<script type="text/javascript">	  								
 		var mc;
 		var mcOptions = {gridSize: 20, maxZoom: 17};
@@ -205,4 +203,5 @@
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
+	<script src="{{ url_for('static', filename='js/markerclusterer.js') }}"></script>
 {% endblock %}
