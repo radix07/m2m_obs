@@ -1,7 +1,14 @@
+build
+dist
+obj
+tmp
 venv
 etheriosdatastore
-tmp
-dist
-build
 db_0
+db_1
+db_2
+set1
+test.db
+run.spec
+*.pyproj
 *.pyc
