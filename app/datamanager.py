@@ -14,6 +14,15 @@ def removeAllDevices():
         db.session.delete(dev)
     db.session.commit()
 
+def getDeviceListFormatted():
+    #valueList.append([connectID,lat,longit,group,connected,globID,disconnectTime ])
+    query = models.device.query.all()
+    list =[]
+    for q in query:
+        list.append([q.devConnectwareId,q.dpMapLat,q.dpMapLong,"",q.dpConnectionStatus,q.dpGlobalIp,q.dpLastDisconnectTime])
+    return list
+
+
 def getDeviceList():
     return models.device.query.all()
 

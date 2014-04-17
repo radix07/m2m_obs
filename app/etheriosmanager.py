@@ -142,7 +142,9 @@ class etheriosData:
         if "Bad credentials" in response_body:
             return None
 
-        self.deviceListInfo = xmlParse.parseDeviceListing(response_body)
+        self.deviceListInfo = xmlParse.parseDeviceListing(response_body)    #gets only from Etherios
+        #local
+
         #([connectID,lat,longit,group,connected,globID,disconnectTime ])
         for i in self.deviceListInfo:
             print i
@@ -168,6 +170,8 @@ class etheriosData:
         print "Committing Device List..."
         datamanager.commitDB()
         
+        self.deviceListInfo  = datamanager.getDeviceListFormatted()
+
         return self.deviceListInfo
     
     def updateStreamListDataPoints(self,fromDate=0):
