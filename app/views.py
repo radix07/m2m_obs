@@ -7,9 +7,10 @@ from functools import wraps
 from datetime import datetime,timedelta
 
 from app import app, db, lm
+app.jinja_env.add_extension('jinja2.ext.do')
 
 from models import User, ROLE_USER, ROLE_ADMIN
-from forms import LoginForm
+from forms import LoginForm,pecosConfigForm
 from random import choice
 import time
 import etheriosmanager
@@ -82,7 +83,7 @@ def index_page():
     ed = datamanager.getAllEventOccurances()
     for e in ed:
         print e.devID,e.streamID,e.datapoint,e.timeStamp
-    return render_template('index.html',user= 'Ryan',
+    return render_template('index.html',user= g.user.get_username(),
                            devList=etherios.deviceListInfo,
                            eventData=ed,
                            local=localFrontEnd,
@@ -93,13 +94,13 @@ def cleanDB():
     flash('Clean Database Run')
     etherios.initFromDB()
     datamanager.removeAllDevices()
-    return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
+    return render_template('index.html',user= g.user.get_username(),devList=etherios.deviceListInfo)
 
 @app.route('/force')
 @login_required
 def forceUpdate():
     etherios.initFromDB()
-    return render_template('index.html',user= 'Ryan',devList=etherios.deviceListInfo)
+    return render_template('index.html',user= g.user.get_username(),devList=etherios.deviceListInfo)
 
 @app.route('/ctest.html')
 def chartTest():
@@ -133,26 +134,38 @@ def testPage():
     #app.logger.debug(datamanager.getAllEventOccurances())
     #events = datamanager.getAllEventOccurances()
 
-    #etherios.getRecentDataPoints()
-    #datamanager.normalizeDataStreamRecords()
-    #datamanager.normalizeDataPointRecords()
     etherios.updateLatestStreamValues()
     etherios.updateStreamListDataPoints()
-                                              
-    #datamanager.getMostRecentTSDataPoint("00080003-00000000-030001F1-E056EE95","Hours")
     
-    #app.logger.debug(etherios.updateLatestStreamValues())    
-    #app.logger.debug(etherios.updateStreamListDataPoints())
-    #return render_template(temp)
+    datamanager.cleanOldDataForDBThreshold(9700)        #how to ensure actually only oldest records removed
+
     return redirect('index')
 
 @app.route('/controllers.html')
 @login_required
 def controllers():
-    return render_template('controllers.html',user= 'Ryan',
+    return render_template('controllers.html',user= g.user.get_username(),
                            devList=etherios.deviceListInfo,
                            eventData=datamanager.getAllEventOccurances(),
                            datatable=1)
+
+@app.route('/controller/<deviceID>/configuration',methods = ['GET', 'POST'])
+@login_required
+def deviceConfigView(deviceID):
+    form = pecosConfigForm(request.form)
+    
+    if form.validate_on_submit():
+        print "Form Response:"
+        print form.item0.data
+        print form.item1.data
+        flash('PECoS Configuration Sent')
+
+    return render_template('deviceConfiguration.html',   #dataPoint
+                           user= g.user.get_username(),
+                           devID = deviceID,
+                           form = form,
+                           datatable=1)
+
 
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
@@ -165,7 +178,7 @@ def dataPointView(deviceID,streamID):
         st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
 
     return render_template('dataPointList.html',   #dataPoint
-                           user= 'Ryan',
+                           user= g.user.get_username(),
                            dataPointList=dataPointList,
                            streamList=streamList,
                            devID = deviceID,
@@ -177,6 +190,7 @@ def dataPointView(deviceID,streamID):
 @app.route('/controller/<deviceID>')
 @login_required
 def controller(deviceID):
+    #get config list from database
     #get all data from db with deviceID
     streamList = datamanager.getStreamListByDeviceID(deviceID)
     for st in streamList:
@@ -184,11 +198,12 @@ def controller(deviceID):
 
     #app.logger.debug(streamList)
     return render_template('device.html',
-                           user= 'Ryan',
+                           user= g.user.get_username(),
                            streamList=streamList,
                            devID = deviceID,
                            eventData=datamanager.getAllEventOccurances(),
-                           datatable=1)
+                           datatable=1,                                                      
+                           )
 
 
 #onInit

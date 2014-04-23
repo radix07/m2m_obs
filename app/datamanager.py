@@ -122,6 +122,17 @@ def addDataPoint(devID,streamID,timeStamp,datapoint,commit=0):
         db.session.commit()
 
 ########################DATA MANAGE##################
+def cleanOldDataForDBThreshold(limit):
+    recordCount = db.session.execute('select count(*) from data_point_records')
+    print recordCount
+    for i in recordCount:
+        recordCount = i[0]
+    if recordCount > limit:
+        result = db.session.execute('DELETE FROM data_point_records WHERE id IN (select id from data_point_records ORDER BY id ASC LIMIT '+str(long(recordCount) - limit)+")")
+
+    print "Rec Count:",recordCount, "\tRemoved:",str(recordCount - limit),"\tLimit:",limit
+    db.session.commit()
+
 def normalizeDataStreamRecords():
     query = db.session.query(models.latestDataStreamPoints)
     comFlag=0

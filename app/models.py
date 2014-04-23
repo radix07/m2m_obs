@@ -22,6 +22,8 @@ class User(db.Model):
         return False
     def get_id(self):
         return unicode(self.id)
+    def get_username(self):
+        return unicode(self.username)
     def __repr__(self):
         return '<User %r>' % (self.username)    
 
@@ -95,5 +97,20 @@ class localControllerDataItems(db.Model):
     update       = db.Column(db.String(64))
     menu         = db.Column(db.String(64))
     parent       = db.Column(db.String(64))
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+
+class pecosConfig(db.Model):
+    '''Used to generate pecos configuration file to be sent to Etherios and processed by SICoM device
+    '''
+    id           = db.Column(db.Integer, primary_key = True)
+    devID        = db.Column(db.String(64), unique = False)
+    CID          = db.Column(db.BigInteger)
+    label        = db.Column(db.String(64))
+    value        = db.Column(db.Numeric)
+    min          = db.Column(db.Numeric)
+    max          = db.Column(db.Numeric)
+    res          = db.Column(db.Numeric)
+
     created_on = db.Column(db.DateTime, default=db.func.now())
     updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())

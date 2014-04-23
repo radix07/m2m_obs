@@ -1,0 +1,55 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block content %}
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Device Configuration  <a href="../{{devID}}"><i class="fa fa-level-up fa-fw"> </i></a></h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Battery Charge
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+							<form class="form" action="" method="post" name="login">
+							{{form.hidden_tag()}}
+							<div class="list-group">							
+							
+									<a class="list-group-item">
+										<div class="form-group">
+										<label>Daily Run Time</label>
+										<!--<input id="ex2" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="0.5" data-slider-value="70"/>-->
+										{{ form.item0(size = 20, class = "form-control", placeholder = "5 Hours",min=0, max=24) }}										
+										<!--<span class="pull-right text-muted small"><em>Daily Run Time</em></span>-->
+										</div>
+									</a>							
+									<a class="list-group-item">
+										<div class="form-group">
+										<label>%Depth of Discharge</label>
+										<!--<b>Min</b><input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="0.5" data-slider-value="70" data-slider-tooltip="hide"/><b>Max</b>-->
+										{{ form.item1(size = 20, class = "form-control", placeholder = "80%", min=0, max=100) }}
+										<!--<span class="pull-right text-muted small"><em>%Depth of Discharge</em></span>-->
+										</div>
+									</a>
+							</div>
+							<input class="btn btn-success btn-block" type="submit" value="Send Configuration" id="sendConfig">
+							</form>
+                        </div>
+                    </div>
+                    <!-- /.panel -->                    
+                </div>
+                <!-- /.col-lg-4 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+		
+{% endblock %}

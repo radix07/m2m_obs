@@ -3,6 +3,10 @@ from flask import Blueprint,redirect
 from flask import render_template, flash, session, request, g, jsonify
 from forms import LocalControllerForm
 
+import jinja2
+env = jinja2.Environment()
+env.globals.update(zip=zip)
+
 local_api = Blueprint('local_api', __name__)
 rpc =0
 forceDB = 1
@@ -33,7 +37,7 @@ def enterControllerLocation():
             print xmlIP
             return redirect('/local/Dash.html')
         resetLocalControlInterface()
-        return render_template('enterLocalAddress.html',user= 'Ryan',form = form)
+        return render_template('local_device/enterLocalAddress.html',user= 'Ryan',form = form)
     else:
         return redirect('/local/Dash.html')
 
@@ -43,39 +47,58 @@ def logoutLocalDevice():
     return redirect('/local/Dash.html')
 
 @local_api.route("/local/Dash.html")
-def controlDataList():
+def controlDash():
+    print "Local Dash"
+    if isinstance(rpc, int):
+        return redirect('/local')
+
+    systemStatus = rpc.getStatus()
+    liveStreams,recordData = rpc.getLiveStreams()
+
+    if not systemStatus:
+        resetLocalControlInterface()
+        return render_template('local_device/localControllerError.html',user= 'Local')
+    else:
+        return render_template('local_device/localDash.html',user= 'Local',
+                               status = systemStatus,
+                               streams = liveStreams,
+                               records = recordData[1],
+                               timestamp = recordData[0][0],
+                               location = recordData[0][1])
+
+@local_api.route("/local/datatable.html")
+def controlDataTable():
     global rpc
     global forceDB
-
-    print "Local Dash"
+    print "Local DataTable"
     if isinstance(rpc, int):
         return redirect('/local')
 
     db = rpc.getDatabase(force=forceDB)
     if not db:
         resetLocalControlInterface()
-        return render_template('localControllerError.html',user= 'Ryan')
+        return render_template('local_device/localControllerError.html',user= 'Ryan')
     else:
         forceDB = 0
-        return render_template('localDash.html',user= 'Ryan',db=db,datatable=1)
+        return render_template('local_device/localDataTable.html',user= 'Ryan',db=db,datatable=1)
 
 @local_api.route("/local/settings")
 @local_api.route("/local/Settings.html")
 def settings():
     try:
         set = rpc.getSettings()
-        return render_template('settings.html',user= 'Ryan',settings=set)
+        return render_template('local_device/settings.html',user= 'Ryan',settings=set)
     except Exception, e:
         print e
         resetLocalControlInterface()
-        return render_template('localControllerError.html',user= 'Ryan')
+        return render_template('local_device/localControllerError.html',user= 'Ryan')
 
 @local_api.route("/local/settings/<subSet>")
 def subSettings(subSet):
     try:
         set = rpc.getSettings()
-        return render_template('settings.html',user= 'Ryan',settings=set[subSet])
+        return render_template('local_device/settings.html',user= 'Ryan',settings=set[subSet])
     except Exception, e:
         print e
         resetLocalControlInterface()
-        return render_template('localControllerError.html',user= 'Ryan')
+        return render_template('local_device/localControllerError.html',user= 'Ryan')

@@ -28,9 +28,23 @@ class xmlServerProc():
         settingsBinary = self.x.settings().data
         fileManager.writeSettings(settingsBinary,1)
         return pickle.loads(settingsBinary)
+    def getLiveStreams(self):
+        liveStream,recordData = self.x.get_live_streams()
+        print "Live Stream Def:"
+        for i in liveStream:
+            print i
+        print "Record Data"        
+        for i in recordData:
+            print i
+        return liveStream,recordData
 
     def writeSettings(self,settings):
         self.x.write_settings(pickle.dumps(settings))
+
+    def getStatus(self):
+        status = self.x.get_system_status()
+        print status
+        return status
 
     def getDatabase(self,index=0,force=0):
         #if table doesnt exist or force
@@ -67,8 +81,12 @@ class xmlServerProc():
 if __name__ == '__main__':    
     #test 
     s = xmlServerProc()
-    s.initLocalHostXMLRPC()
+    #s.initLocalHostXMLRPC()
+    s.getLiveStreams()
+        
+    #print s.getStatus()
+    '''
     db  = s.getDatabase()
     set = s.getSettings()
-    
+    '''
 

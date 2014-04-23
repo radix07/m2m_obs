@@ -1,6 +1,8 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, PasswordField
+from wtforms import TextField, BooleanField, PasswordField,validators
 from wtforms.validators import Required
+#from flask.ext.wtf.fields.html5 import RangeInput#,IntegerRangeField
+from wtforms.fields.html5 import IntegerField,DecimalField
 from models import User, ROLE_USER, ROLE_ADMIN
 import socket
 
@@ -24,6 +26,22 @@ class LoginForm(Form):
         #print user
         #self.user = user
         ####Add validators   http://flask.pocoo.org/snippets/64/
+        return True
+
+class pecosConfigForm(Form):
+    
+    #get from database???
+    #temp =[]
+    #for i in range(0,10):
+        #temp.append(IntegerField('temp'+str(i), [validators.Required()] ))
+    item0 = IntegerField('item0', [validators.Required()] )    #,validators.NumberRange(0,100) ))
+    item1 = DecimalField('item1', validators = [Required()])
+
+    print "PECoS Config Form"
+    def __init__(self, *args, **kwargs):
+        super(pecosConfigForm, self).__init__(*args, **kwargs)
+
+    def validate(self):
         return True
 
 class LocalControllerForm(Form):

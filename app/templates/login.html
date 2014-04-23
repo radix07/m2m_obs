@@ -1,51 +1,107 @@
-<!-- extend base layout -->
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	{% if title %}
+		<title>{{title}} - PG SICoM</title>
+	{% else %}
+		<title>PG SICoM</title>
+	{% endif %}
+    <!-- Core CSS - Include with every page -->
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">	
+	<link href="{{ url_for('static', filename='font-awesome/css/font-awesome.css') }}" rel="stylesheet">	
 
-<div class="container">
-	<div class="row">
-		<div class="col-md-4 col-md-offset-4">
-			<div class="login-panel panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">Sign In to PG Cloud</h3>
-				</div>
-				<div class="panel-body">
-				{% with messages = get_flashed_messages() %}
-					{% if messages %}
-					<ul class=flashes>
-						{% for message in messages %}
-							<li>{{ message }}</li>
-						{% endfor %}
-					</ul>
-					{% endif %}
-				{% endwith %}
-					<form class="form" action="" method="post" name="login">
-							{{form.hidden_tag()}}
-						<fieldset>
-							<div class="form-group">
-								<!--<input class="form-control" placeholder="User Name" name="username" autofocus>-->
-								
-								{{ form.openid(size = 80, class = "form-control", placeholder = "User Name") }}
-							</div>
-							<div class="form-group">
-								<!--<input class="form-control" placeholder="Password" name="password" type="password" value="">-->
-								{{ form.password(size = 80, class = "form-control", placeholder = "Password") }}
-							</div>
-							<!--
-								<label>								
-									<p>{{form.remember_me}} Remember Me</p>
-								</label>
-							-->
-							<!-- Change this to a button or input when using this as a form -->
-							<!--<a href="index.html" class="btn btn-lg btn-success btn-block">Login</a>-->
-							<input class="btn btn-lg btn-success btn-block" type="submit" value="Sign In">
+	<link href="{{ url_for('static', filename='css/plugins/dataTables/dataTables.bootstrap.css') }}" rel="stylesheet">	
+	
+    <!-- Page-Level Plugin CSS - Dashboard -->
+	<link href="{{ url_for('static', filename='css/plugins/morris/morris-0.4.3.min.css') }}" rel="stylesheet">	
+	<link href="{{ url_for('static', filename='css/plugins/timeline/timeline.css') }}" rel="stylesheet">	
 
-						</fieldset>
-					</form>
+    <!-- SB Admin CSS - Include with every page -->
+	<link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">	    
+
+</head>
+
+<body>
+    <div id="wrapper">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4 col-md-offset-4">
+						<div class="login-panel panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">Sign In to PG Cloud</h3>
+							</div>
+							<div class="panel-body">
+							{% with messages = get_flashed_messages() %}
+								{% if messages %}
+								<ul class=flashes>
+									{% for message in messages %}
+										<li>{{ message }}</li>
+									{% endfor %}
+								</ul>
+								{% endif %}
+							{% endwith %}
+								<form class="form" action="" method="post" name="login">
+										{{form.hidden_tag()}}
+									<fieldset>
+										<div class="form-group">
+											<!--<input class="form-control" placeholder="User Name" name="username" autofocus>-->											
+											{{ form.openid(size = 80, class = "form-control", placeholder = "User Name") }}
+										</div>
+										<div class="form-group">
+											<!--<input class="form-control" placeholder="Password" name="password" type="password" value="">-->
+											{{ form.password(size = 80, class = "form-control", placeholder = "Password") }}
+										</div>
+										<!--
+											<label>								
+												<p>{{form.remember_me}} Remember Me</p>
+											</label>
+										-->
+										<!-- Change this to a button or input when using this as a form -->
+										<!--<a href="index.html" class="btn btn-lg btn-success btn-block">Login</a>-->
+										<input class="btn btn-lg btn-success btn-block" type="submit" value="Sign In">
+
+									</fieldset>
+								</form>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
-	</div>
-</div>
 
-{% endblock %}
+	</div>
+    <!-- /#wrapper -->
+
+    <!-- Core Scripts - Include with every page -->
+	
+    <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
+
+    <!-- Page-Level Plugin Scripts - Dashboard -->
+    <script src="{{ url_for('static', filename='js/plugins/dataTables/jquery.dataTables.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plugins/dataTables/dataTables.bootstrap.js') }}"></script>
+	
+    <!-- SB Admin Scripts - Include with every page -->
+    <script src="{{ url_for('static', filename='js/sb-admin.js') }}"></script>
+	
+    <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
+    <script src="{{ url_for('static', filename='js/plugins/morris/raphael-2.1.0.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/plugins/morris/morris.js') }}"></script>	
+    <script src="{{ url_for('static', filename='js/demo/dashboard-demo.js') }}"></script>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-50122917-1', 'pgsicom.herokuapp.com');
+	  ga('send', 'pageview');
+
+	</script>	
+</body>
+
+</html>

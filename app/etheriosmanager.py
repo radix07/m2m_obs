@@ -273,7 +273,7 @@ class etheriosData:
               <query_setting/></rci_request>
           </send_message></sci_request>"""%devID
 
-        webservice = httplib.HTTP("login.etherios.com",80)
+        webservice = self.getHTTPWebService()
         # to what URL to send the request with a given HTTP method
         webservice.putrequest("POST", "/ws/sci")
 
@@ -286,7 +286,7 @@ class etheriosData:
 
     def genericWebServiceCall(self,request,getpost,message=""):
         #print request
-        webservice = httplib.HTTP("login.etherios.com",80)
+        webservice = self.getHTTPWebService()
         # to what URL to send the request with a given HTTP method
         webservice.putrequest(getpost, "/ws"+request)
         # add the authorization string into the HTTP header
@@ -302,6 +302,8 @@ class etheriosData:
         response_body = webservice.getfile().read()
         return response_body
 
+    def getHTTPWebService(self):
+        return httplib.HTTP("login.etherios.com",80)
 '''
 auth = base64.encodestring("%s:%s"%(username,password))[:-1]
 webservice = httplib.HTTP("login.etherios.com",80)

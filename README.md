@@ -1,4 +1,5 @@
 Flask framework hosted on Heroku
+
 git init (new)
 heroku login
 git remote add heroku git@heroku.com:pgsicom.git
@@ -22,4 +23,5 @@ heroku run upgrade
 heroku logs -t (tail track)
 heroku logs -n 1000
 
-heroku pg:info -a pgsicom
+heroku pg:info
+//heroku pg:info -a pgsicom
