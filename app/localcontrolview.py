@@ -1,4 +1,5 @@
 import os
+import datetime
 from flask import Blueprint,redirect
 from flask import render_template, flash, session, request, g, jsonify
 from forms import LocalControllerForm
@@ -59,6 +60,11 @@ def controlDash():
         resetLocalControlInterface()
         return render_template('local_device/localControllerError.html',user= 'Local')
     else:
+        #str(datetime.timedelta(seconds=666))
+        systemStatus["StoreTimeLeft"] = str(datetime.timedelta(seconds=systemStatus["StoreTimeLeft"]))
+        systemStatus["ExportTimeLeft"]= str(datetime.timedelta(seconds=systemStatus["ExportTimeLeft"]))
+
+        #print sorted(systemStatus, key=systemStatus.get)
         return render_template('local_device/localDash.html',user= 'Local',
                                status = systemStatus,
                                streams = liveStreams,

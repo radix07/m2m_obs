@@ -79,8 +79,12 @@ def logout():
 def index_page():
     #app.logger.debug(etherios.deviceListInfo)
     #flash('Index Page TEST')
-    etherios.updateDeviceList()
+    if etherios.updateDeviceList() is None:
+        flash("Bad Credentials",'message')
+        redirect('/logout')
+
     ed = datamanager.getAllEventOccurances()
+
     for e in ed:
         print e.devID,e.streamID,e.datapoint,e.timeStamp
     return render_template('index.html',user= g.user.get_username(),
@@ -133,11 +137,15 @@ def testPage():
     flash('Searching for new data')
     #app.logger.debug(datamanager.getAllEventOccurances())
     #events = datamanager.getAllEventOccurances()
-
-    etherios.updateLatestStreamValues()
-    etherios.updateStreamListDataPoints()
     
-    datamanager.cleanOldDataForDBThreshold(9700)        #how to ensure actually only oldest records removed
+    etherios.RCIRequest("00000000-00000000-00042DFF-FF0418FB","START")
+    #etherios.getDeviceSettings("00000000-00000000-00042DFF-FF0418FB")
+    #etherios.testCall()
+
+
+    #etherios.updateLatestStreamValues()
+    #etherios.updateStreamListDataPoints()    
+    #datamanager.cleanOldDataForDBThreshold(9700)        #how to ensure actually only oldest records removed
 
     return redirect('index')
 
@@ -151,15 +159,25 @@ def controllers():
 
 @app.route('/controller/<deviceID>/configuration',methods = ['GET', 'POST'])
 @login_required
-def deviceConfigView(deviceID):
-    form = pecosConfigForm(request.form)
-    
-    if form.validate_on_submit():
-        print "Form Response:"
-        print form.item0.data
-        print form.item1.data
-        flash('PECoS Configuration Sent')
+def deviceConfigView(deviceID):    
+    if request.method == 'POST':
+        if request.form['submit'] == 'SubmitBatteryCharge':        
+            if form.validate_on_submit():
+                print "Form Response:"  #package data items
+                stringConfig = str(form.item0.label.text)+","+str(form.item0.data)+"\n"+\
+                                str(form.item1.label.text)+","+str(form.item1.data)
+                print stringConfig
+                etherios.sendFile(stringConfig,deviceID+"/config.txt")  #send to (deviceID group)/config                                
+                #emit RCI request
+                flash('PECoS Configuration Sent')        
+                #spawn process to wait/poll for update verify?
+                    #notify user of update with flash message
+        elif request.form['submit'] == 'TestButton':
+            print "Test Button Pressed"
+            #emit RCI
+            flash(etherios.RCIRequest("00000000-00000000-00042DFF-FF0418FB","START"))
 
+    form = pecosConfigForm(request.form)    
     return render_template('deviceConfiguration.html',   #dataPoint
                            user= g.user.get_username(),
                            devID = deviceID,

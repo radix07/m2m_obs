@@ -139,7 +139,10 @@ class etheriosData:
     def updateDeviceList(self):
         response_body = self.genericWebServiceCall("/DeviceCore","GET")
                 
-        if "Bad credentials" in response_body:
+        try:
+            if "Bad credentials" in response_body:
+                return None
+        except:
             return None
 
         self.deviceListInfo = xmlParse.parseDeviceListing(response_body)    #gets only from Etherios
@@ -272,52 +275,60 @@ class etheriosData:
             <rci_request version="1.1"> 
               <query_setting/></rci_request>
           </send_message></sci_request>"""%devID
+        try:
+            webservice = self.getHTTPWebService()
+            # to what URL to send the request with a given HTTP method
+            webservice.putrequest("POST", "/ws/sci")
 
-        webservice = self.getHTTPWebService()
-        # to what URL to send the request with a given HTTP method
-        webservice.putrequest("POST", "/ws/sci")
+            # add the authorization string into the HTTP header
+            webservice.putheader("Authorization", "Basic %s"%self.auth)
+            webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
+            webservice.putheader("Content-length", "%d" % len(message))
+            webservice.endheaders()
+            webservice.send(message)
+            statuscode, statusmessage, header = webservice.getreply()
+            response_body = webservice.getfile().read()
+            return response_body
+        except Exception, e:
+            print e
+        statuscode, statusmessage, header = webservice.getreply()
 
-        # add the authorization string into the HTTP header
-        webservice.putheader("Authorization", "Basic %s"%self.auth)
-        webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
-        webservice.putheader("Content-length", "%d" % len(message))
-        webservice.endheaders()
-        webservice.send(message)
+    def RCIRequest(self,deviceID,data,action="action_callback"):
+        message ="""<sci_request version="1.0"> 
+                    <send_message cache="false"><targets><device id="%s"/>
+                    </targets> <rci_request version="1.1"><do_command target="%s">
+                    <data>%s</data></do_command></rci_request></send_message></sci_request>"""%(deviceID,action,data)
+        temp = self.genericWebServiceCall("/sci","POST",message)
+        print temp
+        return temp
+
+    def sendFile(self,data,destination):
+        #webservice.putrequest("PUT", "/ws/FileData/~/test_folder/test.xml?type=file")
+        request = "/FileData/~/"+destination+"?type=file"
+        print request
+        print self.genericWebServiceCall(request,"PUT",data)
 
     def genericWebServiceCall(self,request,getpost,message=""):
-        #print request
-        webservice = self.getHTTPWebService()
-        # to what URL to send the request with a given HTTP method
-        webservice.putrequest(getpost, "/ws"+request)
-        # add the authorization string into the HTTP header
-        webservice.putheader("Authorization", "Basic %s"%self.auth)
-        webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
-        if len(message):
-            webservice.putheader("Content-length", "%d" % len(message))
-        webservice.endheaders()
-        if len(message):
-            webservice.send(message)
-        statuscode, statusmessage, header = webservice.getreply()
-        #print statusmessage
-        response_body = webservice.getfile().read()
-        return response_body
+        try:
+            webservice = self.getHTTPWebService()
+            # to what URL to send the request with a given HTTP method
+            webservice.putrequest(getpost, "/ws"+request)
+            # add the authorization string into the HTTP header
+            webservice.putheader("Authorization", "Basic %s"%self.auth)
+            webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
+            if len(message):
+                webservice.putheader("Content-length", "%d" % len(message))
+
+            webservice.endheaders()
+            if len(message):
+                webservice.send(message)
+            
+            statuscode, statusmessage, header = webservice.getreply()
+            #if statuscode != 201:
+            response_body = webservice.getfile().read()
+            return response_body
+        except Exception, e:
+            print e
 
     def getHTTPWebService(self):
         return httplib.HTTP("login.etherios.com",80)
-'''
-auth = base64.encodestring("%s:%s"%(username,password))[:-1]
-webservice = httplib.HTTP("login.etherios.com",80)
-
-# to what URL to send the request with a given HTTP method
-webservice.putrequest("GET", "/ws/DeviceCore")
-
-# add the authorization string into the HTTP header
-webservice.putheader("Authorization", "Basic %s"%auth)
-webservice.putheader("Content-type", "text/xml; charset=\"UTF-8\"")
-webservice.endheaders()
-
-# get the response
-statuscode, statusmessage, header = webservice.getreply()
-response_body = webservice.getfile().read()
-
-'''

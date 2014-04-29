@@ -14,11 +14,31 @@
                 <div class="col-lg-2">
                     <div class="panel panel-default">
                         <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Engine Control
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+								<div class="list-group">
+								<form class="form" action="" method="post" name="charge_config">
+										<a class="list-group-item"><button type="button" class="btn btn-success btn-block">Start</button></a>
+										<a class="list-group-item"><button type="button" class="btn btn-info btn-block">Charge/Test</button></a>
+										<a class="list-group-item"><button type="button" class="btn btn-danger btn-block">Stop</button></a>
+										<a class="list-group-item"><input class="btn btn-warning btn-block" type="submit" value="TestButton" id="sendButton" name="submit"></a>
+								</form>
+								</div>						
+                        </div>
+                    </div>
+                    <!-- /.panel -->                    
+                </div>
+                <!-- /.col-lg-2 -->
+                <div class="col-lg-2">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Battery Charge
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-							<form class="form" action="" method="post" name="login">
+							<form class="form" action="" method="post" name="charge_config">
 							{{form.hidden_tag()}}
 							<div class="list-group">							
 							
@@ -39,13 +59,13 @@
 										</div>
 									</a>
 							</div>
-							<input class="btn btn-success btn-block" type="submit" value="Send Configuration" id="sendConfig">
+							<input class="btn btn-success btn-block" type="submit" value="SubmitBatteryCharge" id="sendConfig">
 							</form>
                         </div>
                     </div>
                     <!-- /.panel -->                    
                 </div>
-                <!-- /.col-lg-4 -->
+                <!-- /.col-lg-2 -->				
             </div>
             <!-- /.row -->
         </div>
