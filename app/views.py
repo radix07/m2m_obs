@@ -132,20 +132,20 @@ def get_data():
             #['123','ACE','10'],\            
             #['61109','PG','ENG']]"
 
+
+def updateDataPoints():
+    time1 = time.time()
+    etherios.updateLatestStreamValues()
+    etherios.updateStreamListDataPoints()    
+    datamanager.cleanOldDataForDBThreshold(9700)        #how to ensure actually only oldest records removed
+    time2 = time.time()
+    print 'Import function took %0.3f ms' % ((time2-time1)*1000.0)
+
 @app.route('/test.html')
 def testPage():
     flash('Searching for new data')
     #app.logger.debug(datamanager.getAllEventOccurances())
     #events = datamanager.getAllEventOccurances()
-    
-    etherios.RCIRequest("00000000-00000000-00042DFF-FF0418FB","START")
-    #etherios.getDeviceSettings("00000000-00000000-00042DFF-FF0418FB")
-    #etherios.testCall()
-
-
-    #etherios.updateLatestStreamValues()
-    #etherios.updateStreamListDataPoints()    
-    #datamanager.cleanOldDataForDBThreshold(9700)        #how to ensure actually only oldest records removed
 
     return redirect('index')
 
