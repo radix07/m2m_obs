@@ -1,8 +1,8 @@
 from flask.ext.wtf import Form
-from wtforms import TextField, BooleanField, PasswordField,validators
+from wtforms import TextField, BooleanField, PasswordField,validators,IntegerField
 from wtforms.validators import Required
 #from flask.ext.wtf.fields.html5 import RangeInput#,IntegerRangeField
-from wtforms.fields.html5 import IntegerField,DecimalField
+#from wtforms.fields.html5 import IntegerField,DecimalField
 from models import User, ROLE_USER, ROLE_ADMIN
 import socket
 
@@ -35,7 +35,7 @@ class pecosConfigForm(Form):
     #for i in range(0,10):
         #temp.append(IntegerField('temp'+str(i), [validators.Required()] ))
     item0 = IntegerField('item0', [validators.Required()] )    #,validators.NumberRange(0,100) ))
-    item1 = DecimalField('item1', validators = [Required()])
+    item1 = IntegerField('item1', validators = [Required()])
 
     print "PECoS Config Form"
     def __init__(self, *args, **kwargs):
