@@ -213,13 +213,12 @@ def controller(deviceID):
     streamList = datamanager.getStreamListByDeviceID(deviceID)
     for st in streamList:
         st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
-
-    #app.logger.debug(streamList)
+    
     return render_template('device.html',
                            user= g.user.get_username(),
                            streamList=streamList,
                            devID = deviceID,
-                           eventData=datamanager.getAllEventOccurances(),
+                           eventData=datamanager.getAllEventOccurances(devID=deviceID),
                            datatable=1,                                                      
                            )
 

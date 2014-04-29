@@ -190,7 +190,7 @@ class etheriosData:
             
             startTimer = time.time()        #prevent oversampling Etherios
             if startTimer - endTimer < 1:#print "Fast Sample, Add Delay...",startTimer - endTimer
-                time.sleep(.5)                    
+                time.sleep(.8)
             else:pass#print "Sample Time Delta:", str(startTimer - endTimer)
 
             if lastPointTS:
@@ -235,7 +235,7 @@ class etheriosData:
                 #recordItem = models.latestDataStreamPoints(devID=i[0],streamID=i[1],timeStamp = i[2],datapoint=i[3])
                 #db.session.add(recordItem)
             else:
-                print "\tUPDATE RECORD","\t",result.datapoint,result.timeStamp
+                print "\tUPDATE RECORD","\t",result.devID,result.streamID,result.datapoint,str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result.timeStamp)/1000))))
                 result.timeStamp = i[2]
                 result.datapoint=i[3]
         datamanager.commitDB()

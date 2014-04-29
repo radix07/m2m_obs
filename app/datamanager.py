@@ -80,9 +80,12 @@ def getAllDatapointsByID(devID,streamID):
     return models.dataPointRecords.query.filter(models.dataPointRecords.devID.ilike("%"+devID.lower()+"%"),
                                                 models.dataPointRecords.streamID==streamID).all()
     #return models.dataPointRecords.query.filter_by(streamID=streamID,devID=devID).all()
-def getAllEventOccurances(count=10):
+def getAllEventOccurances(count=10, devID=None):
     #print "Get Event Occurances"
-    return formatEpochTimeofList(models.dataPointRecords.query.filter( models.dataPointRecords.streamID=="EventList").order_by(models.dataPointRecords.timeStamp.desc()).limit(10))
+    if devID is None:
+        return formatEpochTimeofList(models.dataPointRecords.query.filter( models.dataPointRecords.streamID=="EventList").order_by(models.dataPointRecords.timeStamp.desc()).limit(10))
+    else:
+        return formatEpochTimeofList(models.dataPointRecords.query.filter( models.dataPointRecords.streamID=="EventList",models.dataPointRecords.devID==devID).order_by(models.dataPointRecords.timeStamp.desc()).limit(10))
 
 
 ####################ADD#############################
