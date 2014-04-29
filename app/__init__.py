@@ -11,10 +11,10 @@ app = Flask(__name__)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 
-from localcontrolview import local_api
 try:
     os.environ['DATABASE_URL']
 except:
+    from localcontrolview import local_api
     print "local dev"
     app.register_blueprint(local_api)
 
