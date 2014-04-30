@@ -35,7 +35,8 @@
                                                 <tr>
 													<td><a href="{{request.path}}/{{ i.streamID }}">{{ i.streamID }}</a></td>
                                                     <td>{{i.datapoint}}</td>
-                                                    <td>{{i.timeStamp}}</td>
+                                                    <td>{{momentjs(i.timeStamp).epoch()}}</td>
+													
                                                 </tr>
 												{% endfor %}
                                             </tbody>
@@ -69,7 +70,7 @@
 								{%if devID == e.devID%}
                                 <a href="#" class="list-group-item">
                                     <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
-                                    <span class="pull-right text-muted small"><em>{{e.timeStamp}}</em>
+                                    <span class="pull-right text-muted small"><em>{{momentjs(e.timeStamp).calendar()}}</em>
                                     </span>
                                 </a>
 								{%endif%}

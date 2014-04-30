@@ -5,9 +5,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
 from datetime import datetime,timedelta
-
 from app import app, db, lm
-app.jinja_env.add_extension('jinja2.ext.do')
 
 from models import User, ROLE_USER, ROLE_ADMIN
 from forms import LoginForm,pecosConfigForm
@@ -17,7 +15,7 @@ import etheriosmanager
 import datamanager
 
 app.permanent_session_lifetime = timedelta(minutes=30)
-
+app.last_time = 0
 if not os.environ.get('DATABASE_URL') is None:
     localFrontEnd = 0
 else:
@@ -51,7 +49,11 @@ def login():
     if form.validate_on_submit():
         registered_user = etherios.tryLogin(form.openid.data,form.password.data)
         #registered_user = User.query.filter_by(username=form.openid.data,password=form.password.data).first()
-        if registered_user is None:        
+        print "USER",registered_user
+        if registered_user == "Invalid Key":
+            flash('Valid Login, Invalid Dash/Cloud Key' , 'error')
+            return redirect(url_for('login'))
+        elif registered_user is None:        
             flash('Username or Password is invalid' , 'error')
             return redirect(url_for('login'))
         
@@ -77,16 +79,14 @@ def logout():
 @app.route('/')
 @login_required
 def index_page():
-    #app.logger.debug(etherios.deviceListInfo)
-    #flash('Index Page TEST')
     if etherios.updateDeviceList() is None:
         flash("Bad Credentials",'message')
         redirect('/logout')
 
     ed = datamanager.getAllEventOccurances()
+    #for e in ed:
+        #print e.devID,e.streamID,e.datapoint,e.timeStamp
 
-    for e in ed:
-        print e.devID,e.streamID,e.datapoint,e.timeStamp
     return render_template('index.html',user= g.user.get_username(),
                            devList=etherios.deviceListInfo,
                            eventData=ed,
@@ -105,49 +105,6 @@ def cleanDB():
 def forceUpdate():
     etherios.initFromDB()
     return render_template('index.html',user= g.user.get_username(),devList=etherios.deviceListInfo)
-
-@app.route('/ctest.html')
-def chartTest():
-    return render_template('chartTester.html')
-
-@app.route('/get_data')
-def get_data():
-    print ":TEST"
-    #print jsonify(results =1+2)
-
-    return '''{
-              "cols": [
-                    {"id":"","label":"Topping","pattern":"","type":"string"},
-                    {"id":"","label":"Slices","pattern":"","type":"number"}
-                  ],
-              "rows": [
-                    {"c":[{"v":"Mushrooms","f":null},{"v":3,"f":null}]},
-                    {"c":[{"v":"Onions","f":null},{"v":1,"f":null}]},
-                    {"c":[{"v":"Olives","f":null},{"v":1,"f":null}]},
-                    {"c":[{"v":"Zucchini","f":null},{"v":1,"f":null}]},
-                    {"c":[{"v":"Pepperoni","f":null},{"v":2,"f":null}]}
-                  ]
-            }'''
-    #return "[['Table1','Table2','Table3'],\
-            #['123','ACE','10'],\            
-            #['61109','PG','ENG']]"
-
-
-def updateDataPoints():
-    time1 = time.time()
-    etherios.updateLatestStreamValues()
-    etherios.updateStreamListDataPoints()    
-    datamanager.cleanOldDataForDBThreshold(9700)        #how to ensure actually only oldest records removed
-    time2 = time.time()
-    print 'Import function took %0.3f ms' % ((time2-time1)*1000.0)
-
-@app.route('/test.html')
-def testPage():
-    flash('Searching for new data')
-    #app.logger.debug(datamanager.getAllEventOccurances())
-    #events = datamanager.getAllEventOccurances()
-
-    return redirect('index')
 
 @app.route('/controllers.html')
 @login_required
@@ -173,9 +130,13 @@ def deviceConfigView(deviceID):
                 #spawn process to wait/poll for update verify?
                     #notify user of update with flash message
         elif request.form['submit'] == 'TestButton':
-            print "Test Button Pressed"
-            #emit RCI
-            flash(etherios.RCIRequest("00000000-00000000-00042DFF-FF0418FB","START"))
+            print "Test Button Pressed"            
+            curr_time = int(time.time())        #put blocking timer to prevent over sending/running etherios/device
+            if curr_time - app.last_time > 30:
+                app.last_time = curr_time                
+                flash(etherios.RCIRequest(deviceID,"START"))
+            else:
+                flash("request already sent...")
 
     form = pecosConfigForm(request.form)    
     return render_template('deviceConfiguration.html',   #dataPoint
@@ -184,7 +145,6 @@ def deviceConfigView(deviceID):
                            form = form,
                            datatable=1)
 
-
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
@@ -192,8 +152,6 @@ def dataPointView(deviceID,streamID):
     for st in dataPointList:
         st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
     streamList = datamanager.getStreamListByDeviceID(deviceID)
-    for st in streamList:
-        st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
 
     return render_template('dataPointList.html',   #dataPoint
                            user= g.user.get_username(),
@@ -211,9 +169,7 @@ def controller(deviceID):
     #get config list from database
     #get all data from db with deviceID
     streamList = datamanager.getStreamListByDeviceID(deviceID)
-    for st in streamList:
-        st.timeStamp = str(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
-    
+
     return render_template('device.html',
                            user= g.user.get_username(),
                            streamList=streamList,
@@ -221,24 +177,39 @@ def controller(deviceID):
                            eventData=datamanager.getAllEventOccurances(devID=deviceID),
                            datatable=1,                                                      
                            )
+########################TEST/UTILITY
+@app.route('/test.html')
+def testPage():
+    flash('Searching for new data')
+    #app.logger.debug(datamanager.getAllEventOccurances())
+    #events = datamanager.getAllEventOccurances()
 
+    return redirect('index')
 
-#onInit
-    #getSettings
-    #getDatabase
+@app.route('/ctest.html')
+def chartTest():
+    return render_template('chartTester.html')
 
-#getMenuDirectorData()
-    #request all menus
-#getChartData()
-    #request all data
-#build plot window
-#plotDataItem
-    #return plot window with JS
-#_getNewPlotPoints
-    #return JSONify of data points
-#displaySettings()
+@app.route('/get_data')
+def get_data():
+    print ":TEST"
+    return '''{
+              "cols": [
+                    {"id":"","label":"Topping","pattern":"","type":"string"},
+                    {"id":"","label":"Slices","pattern":"","type":"number"}
+                  ],
+              "rows": [
+                    {"c":[{"v":"Mushrooms","f":null},{"v":3,"f":null}]},
+                    {"c":[{"v":"Onions","f":null},{"v":1,"f":null}]},
+                    {"c":[{"v":"Olives","f":null},{"v":1,"f":null}]},
+                    {"c":[{"v":"Zucchini","f":null},{"v":1,"f":null}]},
+                    {"c":[{"v":"Pepperoni","f":null},{"v":2,"f":null}]}
+                  ]
+            }'''
+    #return "[['Table1','Table2','Table3'],\
+            #['123','ACE','10'],\            
+            #['61109','PG','ENG']]"
 
-#get/build local database?
 
 
 if __name__ == '__main__':

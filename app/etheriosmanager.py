@@ -3,7 +3,7 @@ import base64
 import xmlParse
 import datamanager
 import time
-
+from config import DASH_ETHERIOS_KEY
 
 #Group->Users (TBD???)
     #User->Device (allowances...???)
@@ -26,21 +26,34 @@ class etheriosData:
     def tryLogin(self,un,pw):
         self.auth = base64.encodestring("%s:%s"%(un,pw))[:-1]        
         #response_body = self.genericWebServiceCall("/DeviceCore","GET")
-        response_body = self.initFromDB()
+        
+        response_body = self.validateKeyFile()
         print "UserName:",un," Password:",pw,"  AutKey:", self.auth
         print "Result:",response_body
-        if "Bad credentials" in response_body:
-            self.auth = base64.encodestring("%s:%s"%(self.username,self.password))[:-1]
-            print self.username,self.password, self.auth
-            return None
+        if response_body != 1:
+            if "Bad credentials" in response_body:
+                self.auth = base64.encodestring("%s:%s"%(self.username,self.password))[:-1]
+                print "Bad Credentials"
+                #print self.username,self.password, self.auth
+                return None
+            else:
+                print "valid user credentials, invalid cloud/dash association keys"
+                return "Invalid Key"
         else:
             username = un
             password = pw
             user = datamanager.addOrGetUser(username,password)                        
             self.ethUser = user
-            
+            response_body = self.initFromDB()
             return user
-    
+    def validateKeyFile(self):
+        response = self.genericWebServiceCall("/FileData/~/dashKeyfile","GET")
+        if response == DASH_ETHERIOS_KEY:
+            return 1
+        else:
+            return response
+
+
     def initFromDB(self):
         #result = datamanager.getDeviceList()
         if self.getNewDevices() is None:
@@ -182,6 +195,7 @@ class etheriosData:
         #store data
         endTimer=0     
         newDataPointCounter=0
+        commitFlag=0
         for stream in self.streamListInfo:  #for every data stream, get list of points                
             if not fromDate:
                 lastPointTS = datamanager.getMostRecentTSDataPoint(stream[0],stream[1])
@@ -190,14 +204,15 @@ class etheriosData:
             
             startTimer = time.time()        #prevent oversampling Etherios
             if startTimer - endTimer < 1:#print "Fast Sample, Add Delay...",startTimer - endTimer
-                time.sleep(.8)
+                print "Delay Added:",startTimer - endTimer
+                time.sleep(1.2)
             else:pass#print "Sample Time Delta:", str(startTimer - endTimer)
 
             if lastPointTS:
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1],startTime=lastPointTS)
             else:
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1])
-            commitFlag=0
+            
             if len(streamPoints) == 0:
                 print "\tNo Etherios data"
                 #Stream exists, but no data points! Should this stream be deleted from Etherios????
@@ -211,10 +226,10 @@ class etheriosData:
                         datamanager.addDataPoint(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
                         newDataPointCounter+=1
                         #app.logger.debug("New Data Point Record: ",stream,p)
-            if commitFlag:
-                datamanager.commitDB()
-            else:
-                print "\tNo new data"
+        if commitFlag:
+            datamanager.commitDB()
+        else:
+            print "\tNo new data"
             endTimer = startTimer
         print "Data Points Added:",newDataPointCounter
 

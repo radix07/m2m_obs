@@ -22,11 +22,10 @@
 	
     <!-- SB Admin CSS - Include with every page -->
 	<link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">	    
-
+    <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
 </head>
 
 <body>
-
     <div id="wrapper">
 
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -65,17 +64,8 @@
 							{% endif %}
 						{% endwith %}						
                         </li>
-						<!--
-                        <li class="divider"></li>
-                        <li>
-                            <a class="text-center" href="#">							
-                                <strong>See All Alerts</strong>
-                                <i class="fa fa-angle-right"></i>
-                            </a>
-                        </li>-->
-                    </ul>
-                    <!-- /.dropdown-alerts -->
-					
+	                </ul>
+                    <!-- /.dropdown-alerts -->					
                 </li>
                 <!-- /.dropdown -->			
                 <li class="dropdown">
@@ -125,12 +115,7 @@
 					{% endif %}
                     <li>
 					<!-- http://fortawesome.github.io/Font-Awesome/icons/ -->
-                        <!--<a href="{{request.script_root }}/index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>-->
 						<a href="{{request.script_root }}/index.html"><i class="fa fa-map-marker fa-fw"></i> Dashboard</a>
-                    </li>
-
-                    <li>
-                        <!--<a href="{{request.script_root }}/tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>-->
                     </li>
                     <li>
                         <a href="{{request.script_root }}/controllers.html"><i class="fa fa-dashboard fa-fw"></i> Controllers</a>
@@ -161,6 +146,7 @@
 	
     <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
     <script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
 
     <!-- Page-Level Plugin Scripts - Dashboard -->

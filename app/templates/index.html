@@ -155,7 +155,12 @@
                                                     <td>{{i[1]}},{{i[2]}}</td>
                                                     <td>{{i[5]}}</td>
 													<td>{{i[4]}}</td>
-													<td>{{i[6]}}</td>
+													{%if i[6] == "0"%}
+														<td>None</td>
+													{%else%}
+														<td>{{momentjs(i[6]).fromNow()}}</td>
+													{%endif%}
+													<!--<td>{{i[6]}}</td>-->
                                                 </tr>
 												{% endfor %}
                                             </tbody>
@@ -188,7 +193,7 @@
 								{%for e in eventData%}
                                 <a href="controller/{{ e.devID }}" class="list-group-item">								
                                     <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
-                                    <span class="pull-right text-muted small"><em>{{e.timeStamp}}</em>
+                                    <span class="pull-right text-muted small"><em>{{momentjs(e.timeStamp).calendar()}}</em>
                                     </span>
                                 </a>
 								{%endfor%}

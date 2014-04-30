@@ -2,7 +2,7 @@ import os
 from flask import Flask, Blueprint
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager
-
+from momentjs import momentjs
 from config import basedir
 
 app = Flask(__name__)
@@ -51,5 +51,7 @@ if os.environ.get('HEROKU') is not None:        #heroku
     app.logger.setLevel(logging.INFO)
     app.logger.info('system startup')
 
+app.jinja_env.globals['momentjs'] = momentjs
+app.jinja_env.add_extension('jinja2.ext.do')
 
 from app import views, models 

@@ -49,6 +49,7 @@ def parseDeviceListing(ds):
         lat=0
         longit=0
         connectID=0
+        disconnectTime=0
         group=""
         if len(s.getElementsByTagName("devConnectwareId")):
             connectID = s.getElementsByTagName("devConnectwareId")[0].firstChild.nodeValue
