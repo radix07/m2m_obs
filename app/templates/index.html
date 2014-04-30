@@ -155,10 +155,10 @@
                                                     <td>{{i[1]}},{{i[2]}}</td>
                                                     <td>{{i[5]}}</td>
 													<td>{{i[4]}}</td>
-													{%if i[6] == "0"%}
-														<td>None</td>
+													{%if i[6] != "0" and i[6] is defined%}
+													<td>{{momentjs(i[6]).fromNow()}}</td>
 													{%else%}
-														<td>{{momentjs(i[6]).fromNow()}}</td>
+													<td>None</td>
 													{%endif%}
 													<!--<td>{{i[6]}}</td>-->
                                                 </tr>
