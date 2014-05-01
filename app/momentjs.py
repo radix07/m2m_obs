@@ -7,10 +7,10 @@ class momentjs(object):
         self.timestamp = timestamp
 
     def render(self, format):                
-        return Markup("<script>\ndocument.write(moment(\"%s\").%s);\n</script>" % (self.timestamp, format))
+        return Markup("<script>document.write(moment(\"%s\").%s);</script>" % (self.timestamp, format))
 
     def renderRaw(self, format):                
-        return Markup("<script>\ndocument.write(moment(%s).%s);\n</script>" % (self.timestamp, format))
+        return Markup("<script>document.write(moment(%s).%s);</script>" % (self.timestamp, format))
 
     def format(self, fmt):
         return self.render("format(\"%s\")" % fmt)

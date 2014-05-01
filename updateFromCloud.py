@@ -2,7 +2,8 @@ from app import db,etheriosmanager,datamanager
 import time
 
 etherios = etheriosmanager.etheriosData()
-etherios.tryLogin("TestMe","Password_123")
+#etherios.tryLogin("TestMe","Password_123")
+etherios.tryLogin("pgengineering","Pgecs-2322")
 time1 = time.time()
 etherios.updateLatestStreamValues()
 etherios.updateStreamListDataPoints()    

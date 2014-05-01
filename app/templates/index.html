@@ -154,15 +154,14 @@
                                                     <td><a href="controller/{{ i[0] }}">{{ i[0] }}</a></td>
                                                     <td>{{i[1]}},{{i[2]}}</td>
                                                     <td>{{i[5]}}</td>
-													<td>{{i[4]}}</td>
-													{%if i[6] != "0" and i[6] is defined%}
-													<td>{{momentjs(i[6]).fromNow()}}</td>
-													{%else%}
-													<td>None</td>
-													{%endif%}
-													<!--<td>{{i[6]}}</td>-->
+                                                    <td>{{i[4]}}</td>
+                                                    {%if i[6] != "0" and i[6] is defined%}
+                                                    <td>{{momentjs(i[6]).fromNow()}}</td>
+                                                    {%else%}
+                                                    <td>None</td>
+                                                    {%endif%}
                                                 </tr>
-												{% endfor %}
+                                                {% endfor %}
                                             </tbody>
                                         </table>
                                     </div>
@@ -191,11 +190,8 @@
                         <div class="panel-body">
                             <div class="list-group">
 								{%for e in eventData%}
-                                <a href="controller/{{ e.devID }}" class="list-group-item">								
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
-                                    <span class="pull-right text-muted small"><em>{{momentjs(e.timeStamp).calendar()}}</em>
-                                    </span>
-                                </a>
+                                 <a href="controller/{{ e.devID }}" class="list-group-item"><i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
+                                 <span class="pull-right text-muted small"><em>{{momentjs(e.timeStamp).calendar()}}</em></span></a>
 								{%endfor%}
                             </div>
                             <!-- /.list-group -->
