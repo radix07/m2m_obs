@@ -6,7 +6,6 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
 from datetime import datetime,timedelta
 from app import app, db, lm
-
 from models import User, ROLE_USER, ROLE_ADMIN
 from forms import LoginForm,pecosConfigForm
 from random import choice
@@ -28,7 +27,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 etherios = etheriosmanager.etheriosData()
 
 @lm.user_loader
-def load_user(id):    
+def load_user(id):
     return etherios.ethUser
 
 @app.before_request
@@ -53,16 +52,16 @@ def login():
         if registered_user == "Invalid Key":
             flash('Valid Login, Invalid Dash/Cloud Key' , 'error')
             return redirect(url_for('login'))
-        elif registered_user is None:        
+        elif registered_user is None:
             flash('Username or Password is invalid' , 'error')
             return redirect(url_for('login'))
-        
+
         #add if new user/
         login_user(registered_user, remember = form.remember_me.data)
         flash('You were successfully logged in')
         return redirect('/index')
 
-    return render_template('login.html', 
+    return render_template('login.html',
                             title = 'Sign In',
                             form = form)
 
@@ -117,24 +116,24 @@ def controllers():
 
 @app.route('/controller/<deviceID>/configuration',methods = ['GET', 'POST'])
 @login_required
-def deviceConfigView(deviceID):    
+def deviceConfigView(deviceID):
     if request.method == 'POST':
-        if request.form['submit'] == 'SubmitBatteryCharge':        
+        if request.form['submit'] == 'SubmitBatteryCharge':
             if form.validate_on_submit():
                 print "Form Response:"  #package data items
                 stringConfig = str(form.item0.label.text)+","+str(form.item0.data)+"\n"+\
                                 str(form.item1.label.text)+","+str(form.item1.data)
                 print stringConfig
-                etherios.sendFile(stringConfig,deviceID+"/config.txt")  #send to (deviceID group)/config                                
+                etherios.sendFile(stringConfig,deviceID+"/config.txt")  #send to (deviceID group)/config
                 #emit RCI request
-                flash('PECoS Configuration Sent')        
+                flash('PECoS Configuration Sent')
                 #spawn process to wait/poll for update verify?
                     #notify user of update with flash message
         elif request.form['submit'] == 'TestButton':
-            print "Test Button Pressed"            
+            print "Test Button Pressed" 
             curr_time = int(time.time())        #put blocking timer to prevent over sending/running etherios/device
             if curr_time - app.last_time > 30:
-                app.last_time = curr_time                
+                app.last_time = curr_time
                 flash(etherios.RCIRequest(deviceID,"START"))
             else:
                 flash("request already sent...")
@@ -176,7 +175,7 @@ def controller(deviceID):
                            streamList=streamList,
                            devID = deviceID,
                            eventData=datamanager.getAllEventOccurances(devID=deviceID),
-                           datatable=1,                                                      
+                           datatable=1,
                            )
 ########################TEST/UTILITY
 @app.route('/test.html')
@@ -208,7 +207,7 @@ def get_data():
                   ]
             }'''
     #return "[['Table1','Table2','Table3'],\
-            #['123','ACE','10'],\            
+            #['123','ACE','10'],\
             #['61109','PG','ENG']]"
 
 

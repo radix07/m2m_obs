@@ -191,8 +191,7 @@ class etheriosData:
         return self.deviceListInfo
     
     def updateStreamListDataPoints(self,fromDate=0):
-        #get data
-        #store data
+        #allow for getting more than 1000 points per stream, Etherios Limited by default... Adjust request size or ask for more if available
         endTimer=0     
         newDataPointCounter=0
         commitFlag=0
@@ -218,7 +217,8 @@ class etheriosData:
                 #Stream exists, but no data points! Should this stream be deleted from Etherios????
                 #OR.....Zero results depending responses data
 
-            else: #print "Processing ",len(streamPoints)," Data Points"
+            else: 
+                print "Processing ",len(streamPoints)," Data Points..."
                 for p in streamPoints:                   
                     result = datamanager.getDataPoint(stream[0],stream[1],p[0],p[1])
                     if result is None:

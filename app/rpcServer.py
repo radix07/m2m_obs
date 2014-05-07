@@ -30,6 +30,7 @@ class xmlServerProc():
         return pickle.loads(settingsBinary)
     def getLiveStreams(self):
         liveStream,recordData = self.x.get_live_streams()
+        #liveStream= self.x.get_live_streams()
         print "Live Stream Def:"
         for i in liveStream:
             print i

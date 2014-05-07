@@ -6,7 +6,7 @@ import time
 from config import basedir
 from app import app, db
 
-from app.models import device,User,dataPointRecords,latestDataStreamPoints,localControllerDataItems
+from app.models import device,User,dataPointRecords,latestDataStreamPoints
 from app import etheriosmanager
 from app import datamanager
 

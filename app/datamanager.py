@@ -115,6 +115,7 @@ def addNewStream(devID,streamID,timeStamp,datapoint,commit=0):
     if commit:
         db.session.commit()
 def addDataPoint(devID,streamID,timeStamp,datapoint,commit=0):
+    #Bottle neck here...
     devID,set = fixDevID(devID)
     recordItem = models.dataPointRecords(devID=devID, streamID=streamID, timeStamp = timeStamp, datapoint=datapoint)
     try:
