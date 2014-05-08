@@ -142,8 +142,13 @@ def cleanOldDataForDBThreshold(limit):
     recordCount = db.session.query(models.dataPointRecords).count()
     #print "Datapoint Record Count:",recordCount
 
+    #group by stream, delete record count per group down to limit/(stream count)
     if recordCount > limit:
         result = db.session.execute('DELETE FROM data_point_records WHERE id IN (select id from data_point_records ORDER BY id ASC LIMIT '+str(long(recordCount) - limit)+")")
+    #while recordCount > limit:
+        #result = db.session.execute("DELETE FROM data_point_records WHERE id IN(SELECT MIN(id) FROM data_point_records GROUP BY 'streamID')")
+        #recordCount = db.session.query(models.dataPointRecords).count()
+    
 
     print "Rec Count:",recordCount, "\tRemoved:",str(recordCount - limit),"\tLimit:",limit
     db.session.commit()

@@ -12,8 +12,9 @@ etherios = etheriosmanager.etheriosData()
 etherios.tryLogin("pgengineering","Pgecs-2322")
 time1 = time.time()
 etherios.updateLatestStreamValues()
-etherios.updateStreamListDataPoints()    
+etherios.updateStreamListDataPoints(limit=90)    
 datamanager.cleanOldDataForDBThreshold(9800)        #how to ensure actually only oldest records removed?
+#cant remove last item of a particular stream or latest record lost
 
 time2 = time.time()
 print 'Import function took %0.3f ms' % ((time2-time1)*1000.0)

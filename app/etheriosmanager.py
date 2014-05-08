@@ -190,7 +190,7 @@ class etheriosData:
 
         return self.deviceListInfo
     
-    def updateStreamListDataPoints(self,fromDate=0):
+    def updateStreamListDataPoints(self,fromDate=0,limit=10):
         '''
         May want to allow for getting more than 1000 points per stream, Etherios Limited by default... Adjust request size or ask for more if available if limit hit...
         This module however should not miss any datapoints as it retrieves data since latest point sampled
@@ -215,10 +215,10 @@ class etheriosData:
             else:pass#print "Sample Time Delta:", str(startTimer - endTimer)
 
             if lastPointTS:
-                streamPoints = self.getDataStreamPoints(stream[0],stream[1],startTime=lastPointTS)
+                streamPoints = self.getDataStreamPoints(stream[0],stream[1],startTime=lastPointTS,limit=limit)
             else:
                 print "Last data point not found!"
-                streamPoints = self.getDataStreamPoints(stream[0],stream[1])
+                streamPoints = self.getDataStreamPoints(stream[0],stream[1],limit=limit)
             
             if streamPoints is None:
                 print "\tNo New Etherios data"
@@ -272,17 +272,23 @@ class etheriosData:
 
         return self.streamListInfo
 
-    def getDataStreamPoints(self,devID,dataStr,size=0,startTime=0,endTime=0):        
+    def getDataStreamPoints(self,devID,dataStr,size=0,startTime=0,endTime=0,limit=0):        
         #if devID == "00000000-00000000-00042DFF-FF0418FB":
             #devID = "0000000-00000000-00042DFF-FF0418FB"    #temp fix for embedded id error
 
         if startTime and endTime:
             # ws/DataPoint/device1/temp?startTime=2012-07-18T12:00:00.000Z&endTime=2012-07-18T12:30:00.000Z            
-            call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,endTime)
+            if limit<=0:
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,endTime)
+            else:
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}&size={4}".format(devID,dataStr,startTime,endTime,limit)
             print "\tStart/End time thresh",call            
             response_body = self.genericWebServiceCall(call,"GET")
         elif startTime:
-            call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,str(int(time.time()*1000)))
+            if limit<=0:
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,str(int(time.time()*1000)))
+            else:
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}&size={4}".format(devID,dataStr,startTime,str(int(time.time()*1000)),limit)
             print "\tStart time thresh:",call
             response_body = self.genericWebServiceCall(call,"GET")            
         elif size:
