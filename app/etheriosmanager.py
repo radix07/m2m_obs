@@ -242,6 +242,7 @@ class etheriosData:
             if commitFlag:
                 datamanager.commitDB()
         else:
+            print "\tNo new data"
             endTimer = startTimer
         print "Data Points Added:",newDataPointCounter
         return newDataPointCounter
