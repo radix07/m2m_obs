@@ -64,7 +64,7 @@ def getMostRecentTSDataPoint(devID=0,streamID=0):
             print devID,streamID,":",lastrecord.timeStamp,str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(lastrecord.timeStamp)/1000))))
             return lastrecord.timeStamp            
         except Exception, e:
-            #print "None exist returning 0 TS, e:",e
+            print "Exception, None exist returning 0 TS, e:",e
             return 0
     else:
         return db.session.query(func.max(models.dataPointRecords.timeStamp)).all()[0][0]
