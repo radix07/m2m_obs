@@ -140,7 +140,7 @@ def addDataPoint(devID,streamID,timeStamp,datapoint,commit=0):
 def cleanOldDataForDBThreshold(limit):
     #recordCount = db.session.execute('select count(*) from data_point_records')
     recordCount = db.session.query(models.dataPointRecords).count()
-    print recordCount
+    #print "Datapoint Record Count:",recordCount
 
     if recordCount > limit:
         result = db.session.execute('DELETE FROM data_point_records WHERE id IN (select id from data_point_records ORDER BY id ASC LIMIT '+str(long(recordCount) - limit)+")")

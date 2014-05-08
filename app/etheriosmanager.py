@@ -203,7 +203,7 @@ class etheriosData:
         newDataPointCounter=0
         commitFlag=0
         for stream in self.streamListInfo:  #for every data stream, get list of points                
-            if not fromDate:
+            if fromDate <= 0:
                 lastPointTS = datamanager.getMostRecentTSDataPoint(stream[0],stream[1])+1   #add ms as to not query same data again
             else:
                 lastPointTS = fromDate
@@ -217,6 +217,7 @@ class etheriosData:
             if lastPointTS:
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1],startTime=lastPointTS)
             else:
+                print "Last data point not found!"
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1])
             
             if streamPoints is None:
