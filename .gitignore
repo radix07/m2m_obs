@@ -12,3 +12,4 @@ test.db
 run.spec
 *.pyproj
 *.pyc
+*.db

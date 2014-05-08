@@ -56,9 +56,9 @@ def getDataPoint(devID,streamID,timeStamp,datapoint):
     devID,set = fixDevID(devID)
     return models.dataPointRecords.query.filter_by(devID=devID,streamID=streamID,timeStamp=timeStamp,datapoint=datapoint).first()
 
-def getMostRecentTSDataPoint(devID=0,streamID=0):
-    devID,set = fixDevID(devID)
+def getMostRecentTSDataPoint(devID=0,streamID=0):        
     if devID and streamID:
+        devID,set = fixDevID(devID)
         try:
             lastrecord = db.session.query(models.dataPointRecords).filter(models.dataPointRecords.devID==devID.strip(),models.dataPointRecords.streamID==streamID).order_by(models.dataPointRecords.timeStamp.desc()).first()
             print devID,streamID,":",lastrecord.timeStamp,str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(lastrecord.timeStamp)/1000))))
@@ -114,6 +114,17 @@ def addNewStream(devID,streamID,timeStamp,datapoint,commit=0):
         db.session.add(recordItem)
     if commit:
         db.session.commit()
+def fastaddDataPoints(devID,streamID,pointList,commit=0):
+    temp = [{"devID":devID,"streamID":streamID,"timeStamp":i[0],"datapoint":i[1]} for i in pointList]        
+    db.engine.execute(
+        models.dataPointRecords.__table__.insert(),
+        temp
+        #[{"devID":devID,"streamID":streamID,"timeStamp":i[0],"datapoint":i[1]} for i in pointList]        
+        )
+    return 1
+    #print "SqlAlchemy Core: Total time for " + str(n) + " records " + str(time.time() - t0) + " secs"
+
+    pass
 def addDataPoint(devID,streamID,timeStamp,datapoint,commit=0):
     #Bottle neck here...
     devID,set = fixDevID(devID)

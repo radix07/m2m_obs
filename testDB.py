@@ -19,8 +19,7 @@ class Test_testDB(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         app.config['CSRF_ENABLED'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'test.db')
-        print "--"*40
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
     def tearDown(self):
         #db.drop_all()
         pass
@@ -30,8 +29,8 @@ class Test_testDB(unittest.TestCase):
             print "Device Count:",db.session.query(device).filter(device.id.like('%')).count() 
             print "Data Stream Count:",db.session.query(latestDataStreamPoints).filter(latestDataStreamPoints.id.like('%')).count() 
             print "Data Point Count:",db.session.query(dataPointRecords).filter(dataPointRecords.id.like('%')).count() 
-
-            assert 1==1
+            print "Latest DataPoint:",time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(datamanager.getMostRecentTSDataPoint())/1000)))
+            assert 1==1            
         except:
             self.fail("Counter query fail")
     def test_B_BreakdownDevice2Streams(self):

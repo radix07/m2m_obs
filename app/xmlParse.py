@@ -95,11 +95,15 @@ def parseDeviceListing(ds):
 def parseDataStreamXML(ds):
     if len(ds) > 300:
         print "\tDataStreamParserXML Len :",len(ds)
+    elif "<resultSize>0</resultSize>" in ds:
+        return None
     else:
         print "\tDataStreamParserXML Len :",len(ds)
         print ds
+    
     xmldoc = minidom.parseString(ds)
     node = xmldoc.documentElement
+    resLen = xmldoc.getElementsByTagName('resultedSize') 
     itemlist = xmldoc.getElementsByTagName('DataPoint') 
     valueList=[]
     for s in itemlist:

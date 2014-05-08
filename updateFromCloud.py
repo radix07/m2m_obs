@@ -1,3 +1,9 @@
+'''
+Called periodically from extenal process on server 
+
+Will update all new devices, streams, data points
+'''
+
 from app import db,etheriosmanager,datamanager
 import time
 

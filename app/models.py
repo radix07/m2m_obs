@@ -59,18 +59,18 @@ class device(db.Model):
 class dataPointRecords(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     devID = db.Column(db.String(64), unique = False)
-    streamID = db.Column(db.String(64), unique = False)
-    #timeStamp = db.Column(db.String(64), unique = False)
+    streamID = db.Column(db.String(64), unique = False) #foreign key constraint to streamTable
     timeStamp   = db.Column(db.BigInteger, unique = False)
     datapoint = db.Column(db.String(64), unique = False)
+    #Need unique constraint amongst streamID, timestamp, and datapoint to prevent duplicate inserts
     created_on = db.Column(db.DateTime, default=db.func.now())
     updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-
+#    db.UniqueConstraint(
 class latestDataStreamPoints(db.Model):
     
     id          = db.Column(db.Integer, primary_key = True)
 
-    devID       = db.Column(db.String(64), unique = False)
+    devID       = db.Column(db.String(64), unique = False)      #foreign key constraint to device
     streamID    = db.Column(db.String(64), unique = False)
     #timeStamp   = db.Column(db.String(64), unique = False)
     timeStamp   = db.Column(db.BigInteger, unique = False)

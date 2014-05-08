@@ -191,13 +191,20 @@ class etheriosData:
         return self.deviceListInfo
     
     def updateStreamListDataPoints(self,fromDate=0):
-        #allow for getting more than 1000 points per stream, Etherios Limited by default... Adjust request size or ask for more if available
+        '''
+        May want to allow for getting more than 1000 points per stream, Etherios Limited by default... Adjust request size or ask for more if available if limit hit...
+        This module however should not miss any datapoints as it retrieves data since latest point sampled
+        Even though it may not bring all data in at once, calling multiple times will eventually get all data if it isnt coming in faster than the call rate
+        Ex. if calling daily, would need to verify that no more than 1000 points/day per stream would typically be generated
+            Requires an export rate faster than 1 point every ~1.5 minutes per stream to need multiple calls per day
+        '''
+        '''May need to optimize insert method to use SQLAlchemy core method to speed up bulk inserts... potential to be 25 times faster.. 12 minute run time with maxed point counts and 15 streams'''
         endTimer=0     
         newDataPointCounter=0
         commitFlag=0
         for stream in self.streamListInfo:  #for every data stream, get list of points                
             if not fromDate:
-                lastPointTS = datamanager.getMostRecentTSDataPoint(stream[0],stream[1])
+                lastPointTS = datamanager.getMostRecentTSDataPoint(stream[0],stream[1])+1   #add ms as to not query same data again
             else:
                 lastPointTS = fromDate
             
@@ -212,13 +219,18 @@ class etheriosData:
             else:
                 streamPoints = self.getDataStreamPoints(stream[0],stream[1])
             
-            if len(streamPoints) == 0:
-                print "\tNo Etherios data"
+            if streamPoints is None:
+                print "\tNo New Etherios data"
                 #Stream exists, but no data points! Should this stream be deleted from Etherios????
                 #OR.....Zero results depending responses data
-
+            elif len(streamPoints) == 0:    #shouldnt happen
+                print "\tNo New Etherios data"
             else: 
                 print "Processing ",len(streamPoints)," Data Points..."
+                newDataPointCounter+=len(streamPoints)
+                if datamanager.fastaddDataPoints(devID=stream[0],streamID=stream[1],pointList = streamPoints):
+                    commitFlag = 1
+                '''
                 for p in streamPoints:                   
                     result = datamanager.getDataPoint(stream[0],stream[1],p[0],p[1])
                     if result is None:
@@ -226,12 +238,13 @@ class etheriosData:
                         datamanager.addDataPoint(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
                         newDataPointCounter+=1
                         #app.logger.debug("New Data Point Record: ",stream,p)
-        if commitFlag:
-            datamanager.commitDB()
+                        '''
+            if commitFlag:
+                datamanager.commitDB()
         else:
-            print "\tNo new data"
             endTimer = startTimer
         print "Data Points Added:",newDataPointCounter
+        return newDataPointCounter
 
 ##Get stream data for system with latest data, store to database or update if item already exists
     def updateLatestStreamValues(self):
