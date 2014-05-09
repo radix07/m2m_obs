@@ -138,6 +138,8 @@ def addDataPoint(devID,streamID,timeStamp,datapoint,commit=0):
 
 ########################DATA MANAGE##################
 def cleanOldDataForDBThreshold(limit):
+    #NEED TO ENSURE SOMEHOW THAT LAST DATA POINT IN STREAM IS NOT REMOVED!!!!!!!!!!!!!!
+
     #recordCount = db.session.execute('select count(*) from data_point_records')
     recordCount = db.session.query(models.dataPointRecords).count()
     #print "Datapoint Record Count:",recordCount
