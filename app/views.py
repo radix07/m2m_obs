@@ -12,7 +12,7 @@ from random import choice
 import time
 import etheriosmanager
 import datamanager
-
+import string
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.last_time = 0
 if not os.environ.get('DATABASE_URL') is None:
@@ -113,12 +113,38 @@ def controllers():
                            devList=etherios.deviceListInfo,
                            eventData=datamanager.getAllEventOccurances(),
                            datatable=1)
+@app.route('/details/<deviceID>')
+@login_required
+def controllersDetail(deviceID):    
+    detailListing=[]    
+    resp = etherios.deviceCLIRequest(deviceID,"pycfg scripts")
+    #print resp
+    if "Invalid target" in resp:        #if device is connected
+        detailListing.append("Device Not Found")
+    else:
+        resp = string.split(resp, '\n')
+        for i in resp:
+            if "Uptime" in i:
+                detailListing.append( string.split(i, ':') )
+                break
+        resp = etherios.deviceCLIRequest(deviceID,"pycfg mem")
+        resp = string.split(resp, '\n')
+        for i in resp:
+            if "heap left" in i:
+                detailListing.append( string.split(i, ':') )            
+                break
+    #etherios parse set1 file
+    #get 
+    return render_template('controlDetails.html',user= g.user.get_username(),                           
+                           deviceID=deviceID,
+                           devDetailList = detailListing,                     
+                           datatable=1)
 
 @app.route('/controller/<deviceID>/configuration',methods = ['GET', 'POST'])
 @login_required
 def deviceConfigView(deviceID):
     if request.method == 'POST':
-        if request.form['submit'] == 'SubmitBatteryCharge':
+        if request.form['submit'] == 'Submit Battery Charge':
             if form.validate_on_submit():
                 print "Form Response:"  #package data items
                 stringConfig = str(form.item0.label.text)+","+str(form.item0.data)+"\n"+\
@@ -129,6 +155,9 @@ def deviceConfigView(deviceID):
                 flash('PECoS Configuration Sent')
                 #spawn process to wait/poll for update verify?
                     #notify user of update with flash message
+        elif request.form['submit'] == 'Submit Device Settings':
+            print "Form Response:"
+
         elif request.form['submit'] == 'TestButton':
             print "Test Button Pressed" 
             curr_time = int(time.time())        #put blocking timer to prevent over sending/running etherios/device

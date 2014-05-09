@@ -31,7 +31,7 @@
                     <!-- /.panel -->                    
                 </div>
                 <!-- /.col-lg-2 -->
-                <div class="col-lg-3">
+                <div class="col-lg-4">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Battery Charge
@@ -59,12 +59,47 @@
 										</div>
 									</a>
 							</div>
-							<input class="btn btn-success btn-block" type="submit" value="SubmitBatteryCharge" id="sendConfig">
+							<input class="btn btn-success btn-block" type="submit" value="Submit Battery Charge" id="sendConfig">
 							</form>
                         </div>
                     </div>
                     <!-- /.panel -->                    
                 </div>
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Device Settings
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+							<form class="form" action="" method="post" name="charge_config">
+							{{form.hidden_tag()}}
+							<div class="list-group">							
+							
+									<a class="list-group-item">
+										<div class="form-group"><label>Export Rate</label>
+										{{ form.item0(size = 20, class = "form-control", placeholder = "360 seconds",min=0, max=60*60*24) }}										
+										</div>
+									</a>							
+									<a class="list-group-item">
+										<div class="form-group"><label>Store Rate</label>
+										{{ form.item1(size = 20, class = "form-control", placeholder = "40 seconds", min=60, max=1000) }}
+										</div>
+									</a>
+									<a class="list-group-item">
+										<div class="form-group"><label>Sample Rate</label>
+										{{ form.item1(size = 20, class = "form-control", placeholder = "4 seconds", min=3, max=1000) }}
+										</div>
+									</a>
+									
+							</div>
+							<input class="btn btn-success btn-block" type="submit" value="Submit Device Settings" id="sendConfig">
+							</form>
+                        </div>
+                    </div>
+                    <!-- /.panel -->                    
+                </div>
+				
                 <!-- /.col-lg-2 -->				
             </div>
             <!-- /.row -->

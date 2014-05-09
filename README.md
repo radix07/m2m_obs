@@ -25,3 +25,5 @@ heroku logs -n 1000
 
 heroku pg:info
 //heroku pg:info -a pgsicom
+
+Deployment done with pyinstaller with run.spec

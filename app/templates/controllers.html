@@ -4,7 +4,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Dashboard</h1>
+                    <h1 class="page-header">Device Listing</h1>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
@@ -34,7 +34,11 @@
                                             <tbody>
 												{% for i in devList %}
                                                 <tr>
-                                                    <td><a href="controller/{{ i[0] }}">{{ i[0] }}</a></td>
+													{% if  i[4]|int ==1  %}
+														<td><a href="details/{{ i[0] }}">{{ i[0] }}</a></td>
+													{%else%}
+													<td>{{ i[0] }}</td>
+													{%endif%}
                                                     <td>{{i[1]}},{{i[2]}}</td>
 													{% if  i[4]|int ==1  %}
 														<td>Connected</td>
@@ -63,30 +67,6 @@
                         <!-- /.panel-body -->
                     </div>
                     <!-- /.panel -->                    
-                </div>
-                <!-- /.col-lg-8 -->
-                <div class="col-lg-4">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bell fa-fw"></i> System Alarms and Events
-                        </div>
-                        <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div class="list-group">
-								{%for e in eventData%}
-                                <a href="#" class="list-group-item">
-                                    <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
-                                    <span class="pull-right text-muted small"><em>{{e.timeStamp}}</em>
-                                    </span>
-                                </a>
-								{%endfor%}                                
-                            </div>
-                            <!-- /.list-group -->
-                            <a href="#" class="btn btn-default btn-block">View All Alerts</a>
-                        </div>
-                        <!-- /.panel-body -->
-                    </div>
-                    <!-- /.panel -->
                 </div>
                 <!-- /.col-lg-4  EVENT BLOCK -->
                 

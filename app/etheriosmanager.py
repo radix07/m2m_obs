@@ -140,13 +140,24 @@ class etheriosData:
         username = usern
         password = passw
 
+    def deviceCLIRequest(self,deviceID,CLI):
+        message = """<sci_request version="1.0"> 
+                      <send_message> 
+                        <targets> <device id="{0}"/> </targets> 
+                        <rci_request version="1.1"> 
+                          <do_command target="cli">
+                            <cli>{1}</cli></do_command>
+                        </rci_request></send_message>
+                    </sci_request>""".format(deviceID,CLI)
+        return self.genericWebServiceCall("/sci","POST",message)
+
     def setDeviceLocation(self,deviceID,lat,longit):
         message = """<DeviceCore>
               <devConnectwareId>{0}</devConnectwareId> 
                 <dpMapLat>{1}</dpMapLat>
                 <dpMapLong>{2}</dpMapLong>
             </DeviceCore>
-            """.format(self.deviceID,lat,longit)
+            """.format(deviceID,lat,longit)
         self.genericWebServiceCall("/DeviceCore","PUT",message)
 
     def updateDeviceList(self):
@@ -347,7 +358,6 @@ class etheriosData:
     def genericWebServiceCall(self,request,getpost,message=""):
         try:
             webservice = self.getHTTPWebService()
-            # to what URL to send the request with a given HTTP method
             webservice.putrequest(getpost, "/ws"+request)
             # add the authorization string into the HTTP header
             webservice.putheader("Authorization", "Basic %s"%self.auth)
