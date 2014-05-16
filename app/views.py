@@ -179,7 +179,7 @@ def deviceConfigView(deviceID):
 def dataPointView(deviceID,streamID):
     dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)    
     for st in dataPointList:
-        st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(st.timeStamp)/1000))))
+        st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st.timeStamp)/1000)))
     streamList = datamanager.getStreamListByDeviceID(deviceID)
 
     return render_template('dataPointList.html',   #dataPoint
@@ -190,7 +190,6 @@ def dataPointView(deviceID,streamID):
                            stID = streamID,
                            eventData=datamanager.getAllEventOccurances(),
                            datatable=1)
-
 
 @app.route('/controller/<deviceID>')
 @login_required

@@ -46,6 +46,8 @@ def addOrGetUser(username,password):
 def getStreamListByDeviceIDAndStreamID(did,sid):
     did,set = fixDevID(did)
     return models.latestDataStreamPoints.query.filter_by(streamID=sid,devID=did).first()
+def getStreamListByDeviceID(did):
+    return models.latestDataStreamPoints.query.filter_by(devID=did)
 def getStreamList():
     return models.latestDataStreamPoints.query.all()
 def getStreamListByStreamID(id):
@@ -74,6 +76,13 @@ def getAnyDatapoint():
 
 def getAllDatapoints():
     return models.dataPointRecords.query.order_by(models.dataPointRecords.timeStamp.desc()).all()
+
+def getAllDatapointsFiltered(devID,sinceTS,stream=None):
+    if stream is None:
+        return models.dataPointRecords.query.filter(models.dataPointRecords.devID==devID,models.dataPointRecords.timeStamp >= sinceTS).order_by(models.dataPointRecords.timeStamp.asc()).all()
+    else:
+        return models.dataPointRecords.query.filter(models.dataPointRecords.devID==devID,models.dataPointRecords.timeStamp >= sinceTS,models.dataPointRecords.streamID==stream).order_by(models.dataPointRecords.timeStamp.asc()).all()
+
 
 def getAllDatapointsByID(devID,streamID):
     devID,set = fixDevID(devID)

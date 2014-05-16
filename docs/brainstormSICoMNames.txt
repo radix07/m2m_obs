@@ -1,0 +1,29 @@
+SICoM System Product nameing overview
+	Device Gateway hardware
+	Cloud hosted backend service (Etherios)
+	Frontend Web hosting, data storage and analytics
+DACoM
+
+DevicePG Net/Cloud 
+
+SICoM
+	System Interface Control Module
+	System Interface Communications Module
+	System Interface Communications (and) Monitoring
+	System Interface Control(s) (and) Monitoring
+Device
+DICoM
+
+GOCoM (GCoM)
+        Gateway Operation(s/al) Controls and Monitoring
+FieldCoM
+FICoM
+
+
+Cloud Data Services
+
+PG SOCoM
+
+CAN Viewer
+SIVu 
+COViS

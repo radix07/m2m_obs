@@ -1,0 +1,10 @@
+Customer Questions SICoM:
+   How is data to be used?
+   Why are particular items desired?
+   How much data resolution is needed?
+   Length of retention requirements?
+   Data requirements/limitations?
+   CustomerAlarming requirements, methods?
+   How is the data to be interacted with? Web page, raw data?
+   Who is using this? when/how?
+   Cellular requirements 2G, 3G, CDMA, GPRS?

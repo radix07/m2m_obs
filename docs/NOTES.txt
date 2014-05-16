@@ -1,0 +1,12 @@
+TODO:
+  Write to controller remotely!
+    Have a function that writes a calibration file from FS/Cloud to PECoS
+    Trigger via RCI request (Update calibration)
+    Autogenerate config sheet based on calibration template??
+  Larger Database Testing
+    Spending too much time working around limits
+    Needed for Higher bandwidth testing
+  Multiple source testing (larger scale)
+  Front end clean up, graphics (widgets)
+  Smart data acquisition
+  
