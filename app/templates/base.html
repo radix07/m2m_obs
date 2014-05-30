@@ -23,6 +23,8 @@
     <!-- SB Admin CSS - Include with every page -->
 	<link href="{{ url_for('static', filename='css/sb-admin.css') }}" rel="stylesheet">	    
     <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+	
+	<script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
 </head>
 
 <body>
@@ -144,7 +146,7 @@
 
     <!-- Core Scripts - Include with every page -->
 	
-    <script src="{{ url_for('static', filename='js/jquery-1.10.2.js') }}"></script>
+
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
     <script src="{{ url_for('static', filename='js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
@@ -156,6 +158,9 @@
     <!-- SB Admin Scripts - Include with every page -->
     <script src="{{ url_for('static', filename='js/sb-admin.js') }}"></script>
 	
+
+	
+	<!--<script src="{{ url_for('static', filename='js/demo/flot-demo.js') }}"></script>-->
     <!-- Page-Level Demo Scripts - Dashboard - Use for reference -->
 	{%if not datatable%}
     <script src="{{ url_for('static', filename='js/plugins/morris/raphael-2.1.0.min.js') }}"></script>

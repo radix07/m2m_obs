@@ -29,16 +29,16 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-									{% for (i) in db %}
+									{% for (i) in range(db|length) %}
                                         {% if loop.index%2 %}
 											<tr class="odd gradeX">
 										{%else%}
 											<tr class="gradeU">
 										{%endif%}
-                                            <td>{{i[0]}}</td><td>{{i[1]}}</td>
-                                            <td><a href="#">{{i[2]}}</a></td>
-                                            <td class="center">{{i[3]}}</td>
-                                            <td class="center">{{i[4]}}</td>
+                                            <td>{{db[i][0]}}</td><td>{{db[i][1]}}</td>
+                                            <td><a href="#">{{db[i][2]}}</a></td>
+                                            <td class="center">{{dataValues[i]}}</td>
+                                            <td class="center">{{db[i][4]}}</td>
                                         </tr>
 									{%endfor%}
                                     </tbody>

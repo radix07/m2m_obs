@@ -1,0 +1,80 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	<script language="javascript" type="text/javascript" src="../jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="../jquery.flot.js"></script>
+
+<div id="graph_1" style="width:300px;height:100px;"></div>
+<div id="graph_2" style="width:300px;height:100px;"></div>
+<div id="graph_3" style="width:300px;height:100px;"></div>
+<div id="graph_4" style="width:300px;height:100px;"></div>
+<div id="graph_5" style="width:300px;height:100px;"></div>
+
+<script>
+// Initialize the data to be graphed
+var data = new Array();
+data[0] = new Array();
+data[1] = new Array();
+data[2] = new Array();
+data[3] = new Array();
+data[4] = new Array();
+
+var ticks = new Array();
+
+draw_graphs();
+
+// Draw the graphs
+function draw_graphs() {
+    $.plot($("#graph_1"), [{data:data[0],color:1}],{ xaxis: { mode: "time" }});
+    $.plot($("#graph_2"), [{data:data[1],color:2}],{ xaxis: { mode: "time" }});
+    $.plot($("#graph_3"), [{data:data[2],color:3}],{ xaxis: { mode: "time" }});
+    $.plot($("#graph_4"), [{data:data[3],color:4}],{ xaxis: { mode: "time" }});
+    $.plot($("#graph_5"), [{data:data[4],color:5}],{ xaxis: { mode: "time" }});
+}
+
+// Update the data
+function change_data(n) {
+    d = new Date();
+    data[n].push([d.getTime(),n]);
+    draw_graphs();
+}
+
+</script>
+
+<!--	
+      google.load('visualization', '1', {'packages':['motionchart']});
+      google.setOnLoadCallback(drawChart);
+			function drawVisualization() {
+			  var data = new google.visualization.DataTable();
+			  data.addColumn('string', 'Fruit');
+			  data.addColumn('date', 'Date');
+			  data.addColumn('number', 'Sales');
+			  data.addColumn('number', 'Expenses');
+			  data.addColumn('string', 'Location');
+			  data.addRows([
+				['Apples', new Date(1988,0,1), 1000, 300, 'East'],
+				['Oranges', new Date(1988,0,1), 950, 200, 'West'],
+				['Bananas', new Date(1988,0,1), 300, 250, 'West'],
+				['Apples', new Date(1988,1,1), 1200, 400, 'East'],
+				['Oranges', new Date(1988,1,1), 900, 150, 'West'],
+				['Bananas', new Date(1988,1,1), 788, 617, 'West']
+			  ]);
+
+			  var motionchart = new google.visualization.MotionChart(
+				  document.getElementById('visualization'));
+			  motionchart.draw(data, {'width': 800, 'height': 400});
+			}
+    </script>
+	-->
+  </head>
+
+  <body>
+    <!--<div id="chart_div" style="width: 600px; height: 300px;"></div>-->
+	<a href="#" onclick="change_data(0)">Update 1</a><br>
+	<a href="#" onclick="change_data(1)">Update 2</a><br>
+	<a href="#" onclick="change_data(2)">Update 3</a><br>
+	<a href="#" onclick="change_data(3)">Update 4</a><br>
+	<a href="#" onclick="change_data(4)">Update 5</a><br>
+  </body>
+</html>			

@@ -178,8 +178,10 @@ def deviceConfigView(deviceID):
 @login_required
 def dataPointView(deviceID,streamID):
     dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)    
+
     for st in dataPointList:
         st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st.timeStamp)/1000)))
+
     streamList = datamanager.getStreamListByDeviceID(deviceID)
 
     return render_template('dataPointList.html',   #dataPoint
@@ -208,11 +210,35 @@ def controller(deviceID):
 ########################TEST/UTILITY
 @app.route('/test.html')
 def testPage():
-    flash('Searching for new data')
+    #get all streams per device
+    dataPointList=[]
+    #get max length
+    maxPoints =700
+    x=120
+    x=5
+    dID ="00000000-00000000-00042DFF-FF0418FB" 
+    dID = "00000000-00000000-00042DFF-FF051018"
+    stList = datamanager.getStreamListByDeviceID(dID)
+    if stList.count():
+        recordCount = len(datamanager.getAllDatapointsByID(dID,stList[0].streamID))
+        decimateCount = int(round(recordCount/maxPoints))
+        print "DecInterval:",decimateCount,"  Record Count:",recordCount
+        for stream in stList:        
+            temp = datamanager.getAllDatapointsByID(dID,stream.streamID)[1::decimateCount]
+            if len(temp) > 0 and stream.streamID != "EventList":
+                print stream.streamID
+                dataPointList.append(temp)
+            else:
+                print "No Data:",stream.streamID
+    #dataPointList.append(datamanager.getAllDatapointsByID(dID,"GeneratorCurrent")[1::x])
+    #dataPointList.append(datamanager.getAllDatapointsByID(dID,"BatteryPower")[1::x])
+    #dataPointList.append(datamanager.getAllDatapointsByID(dID,"OilPressure")[1::x])
+    
+    #flash('Searching for new data')
     #app.logger.debug(datamanager.getAllEventOccurances())
     #events = datamanager.getAllEventOccurances()
-
-    return redirect('index')
+    return render_template('flot-demo.html',dp=dataPointList)
+    
 
 @app.route('/ctest.html')
 def chartTest():
@@ -234,11 +260,6 @@ def get_data():
                     {"c":[{"v":"Pepperoni","f":null},{"v":2,"f":null}]}
                   ]
             }'''
-    #return "[['Table1','Table2','Table3'],\
-            #['123','ACE','10'],\
-            #['61109','PG','ENG']]"
-
-
 
 if __name__ == '__main__':
     print "VIEW IS MAIN"

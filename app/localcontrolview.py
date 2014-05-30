@@ -53,8 +53,12 @@ def controlDash():
     if isinstance(rpc, int):
         return redirect('/local')
 
-    systemStatus = rpc.getStatus()
-    liveStreams,recordData = rpc.getLiveStreams()
+    connect = rpc.CheckConnect()
+    print connect
+
+    systemStatus = rpc.GetOperationStatus()
+    print systemStatus
+    liveStreams,recordData = rpc.GetLiveData()
 
     if not systemStatus:
         resetLocalControlInterface()
@@ -77,22 +81,25 @@ def controlDataTable():
     global rpc
     global forceDB
     print "Local DataTable"
+    devID = "123"
     if isinstance(rpc, int):
         return redirect('/local')
 
-    db = rpc.getDatabase(force=forceDB)
+    #db = rpc.getDatabase(force=forceDB)
+    db = rpc.GetDB(devID,force=forceDB)
+    dbData = rpc.GetDBVarValues()
     if not db:
         resetLocalControlInterface()
         return render_template('local_device/localControllerError.html',user= 'Ryan')
     else:
         forceDB = 0
-        return render_template('local_device/localDataTable.html',user= 'Ryan',db=db,datatable=1)
+        return render_template('local_device/localDataTable.html',user= 'Ryan',db=db,dataValues=dbData,datatable=1)
 
 @local_api.route("/local/settings")
 @local_api.route("/local/Settings.html")
 def settings():
     try:
-        set = rpc.getSettings()
+        set = rpc.GetGOCoMSettings()
         return render_template('local_device/settings.html',user= 'Ryan',settings=set)
     except Exception, e:
         print e
@@ -102,7 +109,7 @@ def settings():
 @local_api.route("/local/settings/<subSet>")
 def subSettings(subSet):
     try:
-        set = rpc.getSettings()
+        set = rpc.GetGOCoMSettings()
         return render_template('local_device/settings.html',user= 'Ryan',settings=set[subSet])
     except Exception, e:
         print e
