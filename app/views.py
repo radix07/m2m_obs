@@ -213,10 +213,9 @@ def testPage():
     #get all streams per device
     dataPointList=[]
     #get max length
-    maxPoints =700
+    maxPoints =350
     x=120
     x=5
-    dID ="00000000-00000000-00042DFF-FF0418FB" 
     dID = "00000000-00000000-00042DFF-FF051018"
     stList = datamanager.getStreamListByDeviceID(dID)
     if stList.count():
