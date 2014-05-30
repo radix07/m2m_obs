@@ -217,7 +217,9 @@ def testPage():
     x=120
     x=5
     dID = "00000000-00000000-00042DFF-FF051018"
+    
     stList = datamanager.getStreamListByDeviceID(dID)
+    '''
     if stList.count():
         recordCount = len(datamanager.getAllDatapointsByID(dID,stList[0].streamID))
         decimateCount = int(round(recordCount/maxPoints))
@@ -229,6 +231,7 @@ def testPage():
                 dataPointList.append(temp)
             else:
                 print "No Data:",stream.streamID
+                '''
     #dataPointList.append(datamanager.getAllDatapointsByID(dID,"GeneratorCurrent")[1::x])
     #dataPointList.append(datamanager.getAllDatapointsByID(dID,"BatteryPower")[1::x])
     #dataPointList.append(datamanager.getAllDatapointsByID(dID,"OilPressure")[1::x])
@@ -236,18 +239,29 @@ def testPage():
     #flash('Searching for new data')
     #app.logger.debug(datamanager.getAllEventOccurances())
     #events = datamanager.getAllEventOccurances()
-    return render_template('flot-demo.html',dp=dataPointList)
+    return render_template('flot-demo.html',devID = dID,streamList=stList) #dp=dataPointList,
     
 
 @app.route('/ctest.html')
 def chartTest():
     return render_template('chartTester.html')
 
+@app.route('/get_data/<devID>/<streamIndex>')
+def get_data(devID,streamIndex):
+    print "Get_Data",devID,streamIndex
+    #need date filter...
+    stList = datamanager.getStreamListByDeviceID(devID)
+    datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)
+    list=[]
+    for i in datapoints:
+        list.append([i.timeStamp,i.datapoint])
+
+    return jsonify(label =stList[int(streamIndex)].streamID , data=list)
+
 @app.route('/get_data')
-def get_data():
+def test_get_data():
     print ":TEST"
-    return '''{
-              "cols": [
+    return '''{"cols": [
                     {"id":"","label":"Topping","pattern":"","type":"string"},
                     {"id":"","label":"Slices","pattern":"","type":"number"}
                   ],

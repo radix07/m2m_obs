@@ -71,10 +71,11 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-												{% for i in dp %}
+												{% for i in streamList %}
                                                 <tr>
-													<td><a href="#" onClick="togglePlot({{loop.index-1}}); return false;">{{ i[-1].streamID }}</a></td>
-                                                    <td>{{i[-1].datapoint}}</td>
+													<!--<td><a href="#" onClick="togglePlot({{loop.index-1}}); return false;">{{ i.streamID }}</a></td>-->
+													<td><a href="#" onClick="fetchData({{loop.index-1}}); return false;">{{ i.streamID }}</a></td>
+                                                    <td>{{i.datapoint}}</td>
 													<td><input type="checkbox" name="yaxis" value="Enable"></td>
                                                 </tr>
 												{% endfor %}
@@ -114,7 +115,36 @@
 //Flot Multiple Axes Line Chart
 $(document).ready(function() {
 	thisPlot=null;
-	  
+
+	var dataList = [
+	//empty to start
+	];
+
+	//fetch first
+	var alreadyFetched = {};
+	
+	fetchData = (function (seriesIdx) {
+		$.ajax({url:'get_data/{{devID}}/'+seriesIdx,
+			type: "GET",
+			dataType: "json",
+			data: {},
+			success: function(series) {		
+				
+				//var firstcoordinate = "(" + series.data[0][0] + ", " + series.data[0][1] + ")";
+				//button.siblings("span").text("Fetched " + series.label + ", first point: " + firstcoordinate);
+				// Push the new data onto our existing data array
+				
+				if (!alreadyFetched[series.label]) {
+					alreadyFetched[series.label] = true;
+					dataList.push(series)
+				}
+			
+				doPlot("right");
+			}
+			
+		});				
+	})
+	
 	setYMax = function(value)
 	{
 	  thisPlot.getOptions().yaxes[0].max = value;
@@ -149,14 +179,6 @@ $(document).ready(function() {
 	  thisPlot.setupGrid();
 	  thisPlot.draw();
 	}
-	var dataList = [
-		{%for j in dp%}
-		{   label: '{{j[0].streamID}}',
-			data: [{% for i in j %}[{{i.timeStamp}},{{i.datapoint}}],{% endfor %}],
-			idx: {{loop.index-1}},
-		},
-		{%endfor%}
-	];
 
 	
     function doPlot(position) {
