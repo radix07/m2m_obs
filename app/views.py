@@ -13,6 +13,7 @@ import time
 import etheriosmanager
 import datamanager
 import string
+import math
 app.permanent_session_lifetime = timedelta(minutes=30)
 app.last_time = 0
 if not os.environ.get('DATABASE_URL') is None:
@@ -177,8 +178,13 @@ def deviceConfigView(deviceID):
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
-    dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)[1::2]
+    dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)
 
+    count = len(dataPointList)
+    max =750    
+    decimateInterval = int(math.ceil(count//max))
+    
+    dataPointList = dataPointList[1::decimateInterval] 
     for st in dataPointList:
         st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st.timeStamp)/1000)))
 
@@ -251,12 +257,19 @@ def get_data(devID,streamIndex):
     print "Get_Data",devID,streamIndex
     #need date filter...
     stList = datamanager.getStreamListByDeviceID(devID)
-    datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)[1::2]
+    datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)
+
+    count = len(datapoints)
+    max =750    
+    decimateInterval = int(math.ceil(count//max))
+    datapoints = datapoints[1::decimateInterval] 
+
     list=[]
     for i in datapoints:
         list.append([i.timeStamp,i.datapoint])
 
     return jsonify(label =stList[int(streamIndex)].streamID , data=list)
+
 
 @app.route('/get_data')
 def test_get_data():
