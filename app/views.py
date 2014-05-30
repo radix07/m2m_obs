@@ -177,7 +177,7 @@ def deviceConfigView(deviceID):
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
-    dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)    
+    dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)[1::2]
 
     for st in dataPointList:
         st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st.timeStamp)/1000)))
