@@ -251,7 +251,7 @@ def get_data(devID,streamIndex):
     print "Get_Data",devID,streamIndex
     #need date filter...
     stList = datamanager.getStreamListByDeviceID(devID)
-    datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)
+    datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)[1::2]
     list=[]
     for i in datapoints:
         list.append([i.timeStamp,i.datapoint])

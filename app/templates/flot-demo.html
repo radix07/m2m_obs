@@ -129,12 +129,10 @@ $(document).ready(function() {
 			dataType: "json",
 			data: {},
 			success: function(series) {		
-				
+				//alert(series.data)
 				//var firstcoordinate = "(" + series.data[0][0] + ", " + series.data[0][1] + ")";
-				//button.siblings("span").text("Fetched " + series.label + ", first point: " + firstcoordinate);
-				// Push the new data onto our existing data array
-				
-				if (!alreadyFetched[series.label]) {
+
+				if (!alreadyFetched[series.label]) {	// Push the new data onto our existing data array
 					alreadyFetched[series.label] = true;
 					dataList.push(series)
 				}
@@ -161,9 +159,7 @@ $(document).ready(function() {
 	togglePlot = function(seriesIdx)
 	{
 	  var someData = thisPlot.getData();
-	  //var value = document.getElementsByName("ymax").value;
-	  //alert(value)
-	  
+
 	  someData[seriesIdx].lines.show = !someData[seriesIdx].lines.show;	  
 	  
 	  thisPlot.setData(someData);
@@ -177,7 +173,8 @@ $(document).ready(function() {
 			}
 	  }
 	  thisPlot.setupGrid();
-	  thisPlot.draw();
+	  //thisPlot.draw();
+	  doPlot("right");
 	}
 
 	
@@ -188,7 +185,8 @@ $(document).ready(function() {
 				lines: {show: true}},
 		
             xaxes: [{
-                mode: 'time'
+                mode: 'time',
+				timeformat: "%y/%m/%d %H:%M"
             }],
 			
             yaxes: [{
@@ -203,9 +201,9 @@ $(document).ready(function() {
                 position: position,
             }],*/
             legend: {
-                position: 'nw'
-				//labelFormatter: function(label, series){
-				//return '<a href="#" onClick="togglePlot('+series.idx+'); return false;">'+label+'</a>';				}
+                //position: 'nw'
+				labelFormatter: function(label, series){
+				return '<a href="#" onClick="togglePlot('+series.idx+'); return false;">'+label+'</a>';				}
 				
             },
             grid: {
