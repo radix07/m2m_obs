@@ -128,18 +128,19 @@ $(document).ready(function() {
 			type: "GET",
 			dataType: "json",
 			data: {},
-			success: function(series) {		
+			success: function(series) {						
 				//alert(series.data)
-				//var firstcoordinate = "(" + series.data[0][0] + ", " + series.data[0][1] + ")";
 
 				if (!alreadyFetched[series.label]) {	// Push the new data onto our existing data array
 					alreadyFetched[series.label] = true;
+					offset = moment().zone()*60*1000;					
+					for (var i=0; i< series.data.length; i++){
+						series.data[i][0]-=offset
+					}
 					dataList.push(series)
-				}
-			
-				doPlot("right");
+					doPlot("right");
+				}				
 			}
-			
 		});				
 	})
 	
@@ -172,7 +173,7 @@ $(document).ready(function() {
 					 }
 			}
 	  }
-	  thisPlot.setupGrid();
+	  //thisPlot.setupGrid();
 	  //thisPlot.draw();
 	  doPlot("right");
 	}
