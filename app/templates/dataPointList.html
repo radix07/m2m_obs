@@ -12,7 +12,7 @@
 		data.addColumn('number', '{{stID}}');			
 		//data.addColumn('number', '123{{stID}}');			
 		offset = moment().zone()*60*1000;
-		data.addRows([{% for i in dataPointList %}[new Date({{i[0]}}-offset),{{i[1]}}],{% endfor %}
+		data.addRows([{% for i in dataPointList %}[new Date({{i[0]}}),{{i[1]}}],{% endfor %}
 					]);
 		
 		var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
