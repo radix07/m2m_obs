@@ -93,7 +93,7 @@ def getDecimatedDatapointsByID(devID,streamID,interval):
         print i
 
 def getAllDatapointsByIDRaw(devID,streamID):
-    return db.engine.execute("SELECT timeStamp,datapoint FROM data_point_records WHERE streamID LIKE '"+streamID+"' AND devID LIKE '"+devID+"'")
+    return db.engine.execute("SELECT \"timeStamp\",datapoint FROM data_point_records WHERE streamID LIKE '"+streamID+"' AND devID LIKE '"+devID+"'")
     #q = "SELECT timeStamp,datapoint FROM data_point_records WHERE streamID LIKE '{}' AND devID LIKE '{}'".format(devID,streamID)
     #print q
     #data = db.engine.execute(q)
