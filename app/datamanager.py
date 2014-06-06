@@ -83,7 +83,22 @@ def getAllDatapointsFiltered(devID,sinceTS,stream=None):
     else:
         return models.dataPointRecords.query.filter(models.dataPointRecords.devID==devID,models.dataPointRecords.timeStamp >= sinceTS,models.dataPointRecords.streamID==stream).order_by(models.dataPointRecords.timeStamp.asc()).all()
 
+def getDecimatedDatapointsByID(devID,streamID,interval):
+    data = db.engine.execute("SELECT ROW_NUMBER() FROM data_point_records WHERE streamID LIKE 'PowerInputVoltage'")
+    #data = db.engine.execute("SELECT id,timeStamp,datapoint,streamID, ROW_NUMBER() OVER (ORDER BY id) AS rownum FROM data_point_records WHERE streamID LIKE 'PowerInputVoltage'")
+    #data = db.engine.execute("SELECT id,timeStamp,datapoint,streamID FROM (SELECT id,timeStamp,datapoint,streamID, ROW_NUMBER() OVER (ORDER BY id) AS rownum FROM data_point_records WHERE streamID LIKE 'PowerInputVoltage') AS t WHERE t.rownum % 30 = 0 ORDER BY t.id")
+    
+        
+    for i in data:
+        print i
 
+def getAllDatapointsByIDRaw(devID,streamID):
+    return db.engine.execute("SELECT timeStamp,datapoint FROM data_point_records WHERE streamID LIKE '"+streamID+"' AND devID LIKE '"+devID+"'")
+    #q = "SELECT timeStamp,datapoint FROM data_point_records WHERE streamID LIKE '{}' AND devID LIKE '{}'".format(devID,streamID)
+    #print q
+    #data = db.engine.execute(q)
+    #data = db.engine.execute("SELECT timeStamp,datapoint FROM data_point_records WHERE streamID LIKE 'PowerInputVoltage' AND devID LIKE '00000000-00000000-00042DFF-FF0418FB'")
+        
 def getAllDatapointsByID(devID,streamID):
     devID,set = fixDevID(devID)
     return models.dataPointRecords.query.filter(models.dataPointRecords.devID.ilike("%"+devID.lower()+"%"),
@@ -221,3 +236,6 @@ def fixDevID(devID):
     #remove inherint potential duplicates
 
 
+
+if __name__ == '__main__':
+    datapoints = getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)

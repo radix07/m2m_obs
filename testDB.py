@@ -26,6 +26,11 @@ class Test_testDB(unittest.TestCase):
 
     def test_A_Count(self):        
         try:
+            dID = "00000000-00000000-00042DFF-FF051018"
+            stList = datamanager.getStreamListByDeviceID(dID)
+            datapoints = datamanager.getAllDatapointsByID(str(dID),stList[int(0)].streamID)
+
+
             print "Device Count:",db.session.query(device).filter(device.id.like('%')).count() 
             print "Data Stream Count:",db.session.query(latestDataStreamPoints).filter(latestDataStreamPoints.id.like('%')).count() 
             print "Data Point Count:",db.session.query(dataPointRecords).filter(dataPointRecords.id.like('%')).count() 
@@ -33,7 +38,8 @@ class Test_testDB(unittest.TestCase):
 
             print "WR21 Specific Data Point Count:",db.session.query(dataPointRecords).filter(dataPointRecords.devID.like('%fb%')).count() 
             assert 1==1            
-        except:
+        except Exception,e:
+            print e
             self.fail("Counter query fail")
     def test_B_BreakdownDevice2Streams(self):
         #per device

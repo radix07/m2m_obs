@@ -7,6 +7,9 @@ Will update all new devices, streams, data points
 from app import db,etheriosmanager,datamanager
 import time
 
+#datamanager.getDecimatedDatapointsByID("00000000-00000000-00042DFF-FF0418FB","PowerInputVoltage",1)
+#datamanager.getAllDatapointsByIDRaw('00000000-00000000-00042DFF-FF0418FB','PowerInputVoltage')
+
 etherios = etheriosmanager.etheriosData()
 #etherios.tryLogin("TestMe","Password_123")
 etherios.tryLogin("pgengineering","Pgecs-2322")

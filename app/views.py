@@ -213,6 +213,19 @@ def controller(deviceID):
                            eventData=datamanager.getAllEventOccurances(devID=deviceID),
                            datatable=1,
                            )
+@app.route('/t')
+def highChartTestPage():
+    dataPointList=[]
+    #get max length
+    maxPoints =350
+    x=120
+    x=5
+    dID = "00000000-00000000-00042DFF-FF051018"   
+    stList = datamanager.getStreamListByDeviceID(dID)
+
+    #return render_template('highchart.htm')
+    return render_template('highchart.htm',devID = dID,streamList=stList)
+
 ########################TEST/UTILITY
 @app.route('/test.html')
 def testPage():
@@ -252,21 +265,26 @@ def testPage():
 def chartTest():
     return render_template('chartTester.html')
 
+
 @app.route('/get_data/<devID>/<streamIndex>')
 def get_data(devID,streamIndex):
     print "Get_Data",devID,streamIndex
     #need date filter...
     stList = datamanager.getStreamListByDeviceID(devID)
-    datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)
-
-    count = len(datapoints)
-    max =750    
-    decimateInterval = int(math.ceil(count//max))
-    datapoints = datapoints[1::decimateInterval] 
+    #datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)
+    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),stList[int(streamIndex)].streamID)
 
     list=[]
+    count=0
     for i in datapoints:
-        list.append([i.timeStamp,i.datapoint])
+        list.append([i[0],i[1]])
+        count+=1
+
+    #count = len(datapoints)
+    max =750    
+    decimateInterval = int(math.ceil(count//max))
+    #datapoints = datapoints[1::decimateInterval] 
+    list = list[1::decimateInterval]
 
     return jsonify(label =stList[int(streamIndex)].streamID , data=list)
 

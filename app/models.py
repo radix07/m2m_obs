@@ -57,15 +57,50 @@ class device(db.Model):
     #type - event,processed,raw
 
 class dataPointRecords(db.Model):
+    #typically has resolution down to ~1-20 minutes, contains all raw datapoint stream data
+    id = db.Column(db.Integer, primary_key = True)
+    devID = db.Column(db.String(64), unique = False)
+    streamID = db.Column(db.String(64), unique = False) #foreign key constraint to streamTable
+    timeStamp   = db.Column(db.BigInteger, unique = False)
+    datapoint = db.Column(db.String(64), unique = False)    #would like this to be numeric, but strings are possible...
+    #Need unique constraint amongst streamID, timestamp, and datapoint to prevent duplicate inserts
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+#    db.UniqueConstraint(
+
+#could do a daily merge down from base datapoint model to the longer interval tables
+#need data broken out to allow for quicker queries with appropriate resolution for display purposes (small/spefic windows) at 1million->500,000->250,000 (large/wide windows)
+class dataPointRecordsWeek(db.Model):
+    #Updates daily, contains new day of data from base data points
+    #break down from minute resolution to (0.5-2) hour resolution (168 hours/week)
     id = db.Column(db.Integer, primary_key = True)
     devID = db.Column(db.String(64), unique = False)
     streamID = db.Column(db.String(64), unique = False) #foreign key constraint to streamTable
     timeStamp   = db.Column(db.BigInteger, unique = False)
     datapoint = db.Column(db.String(64), unique = False)
-    #Need unique constraint amongst streamID, timestamp, and datapoint to prevent duplicate inserts
     created_on = db.Column(db.DateTime, default=db.func.now())
     updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-#    db.UniqueConstraint(
+class dataPointRecordsMonth(db.Model):
+    #Update weekly? contains new week based data to be view over an entire month
+    #break down from hour range to 1/4-1 day range (5208 hours/month) (@ .25 days ~ 120pts)
+    id = db.Column(db.Integer, primary_key = True)
+    devID = db.Column(db.String(64), unique = False)
+    streamID = db.Column(db.String(64), unique = False) #foreign key constraint to streamTable
+    timeStamp   = db.Column(db.BigInteger, unique = False)
+    datapoint = db.Column(db.String(64), unique = False)
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+class dataPointRecordsYear(db.Model):
+    #break months down to years 
+    # may not be needed, wont be needed for at least 1-2 years... (@120/month, 1440/year reasonable?)
+    id = db.Column(db.Integer, primary_key = True)
+    devID = db.Column(db.String(64), unique = False)
+    streamID = db.Column(db.String(64), unique = False) #foreign key constraint to streamTable
+    timeStamp   = db.Column(db.BigInteger, unique = False)
+    datapoint = db.Column(db.String(64), unique = False)
+    created_on = db.Column(db.DateTime, default=db.func.now())
+    updated_on = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+
 class latestDataStreamPoints(db.Model):
     
     id          = db.Column(db.Integer, primary_key = True)
