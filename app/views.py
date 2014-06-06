@@ -178,21 +178,24 @@ def deviceConfigView(deviceID):
 @app.route('/controller/<deviceID>/<streamID>')
 @login_required
 def dataPointView(deviceID,streamID):
-    dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)
-
-    count = len(dataPointList)
-    max =750    
-    decimateInterval = int(math.ceil(count//max))
-    
-    dataPointList = dataPointList[1::decimateInterval] 
+    #dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)
+    dataPointList = datamanager.getAllDatapointsByIDRaw(str(deviceID),streamID)
+    count=0
+    list =[]
     for st in dataPointList:
-        st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st.timeStamp)/1000)))
+        #st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000)))
+        list.append([str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000))),st[1]])
+        count+=1        
+    max =750    
+    decimateInterval = int(math.ceil(count//max))    
+    #dataPointList = dataPointList[1::decimateInterval] 
+    list = list[1::decimateInterval] 
 
     streamList = datamanager.getStreamListByDeviceID(deviceID)
 
     return render_template('dataPointList.html',   #dataPoint
                            user= g.user.get_username(),
-                           dataPointList=dataPointList,
+                           dataPointList=list,
                            streamList=streamList,
                            devID = deviceID,
                            stID = streamID,
