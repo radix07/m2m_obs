@@ -184,7 +184,8 @@ def dataPointView(deviceID,streamID):
     list =[]
     for st in dataPointList:
         #st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000)))
-        list.append([str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000))),st[1]])
+        #list.append([str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000))),st[1]])
+        list.append([st[0],st[1]])
         count+=1        
     max =750    
     decimateInterval = int(math.ceil(count//max))    
