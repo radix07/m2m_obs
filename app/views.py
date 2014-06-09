@@ -250,55 +250,39 @@ def testPage():
                 '''
     return render_template('flot-demo.html',devID = dID,streamList=stList)
     
-
-@app.route('/ctest.html')
-def chartTest():
-    dID = "00000000-00000000-00042DFF-FF051018"
+@app.route('/statistics/<dID>')
+def chartTest(dID):
     stList = datamanager.getStreamListByDeviceID(dID)
     chartCount=0
     for i in stList:
         chartCount+=1
-    return render_template('chartTester.html',devID=dID,streamList=stList,chartCount=chartCount)
+    return render_template('hcDataPlotter.html',devID=dID,streamList=stList,chartCount=chartCount)
 
 
-@app.route('/get_data/<devID>/<streamIndex>')
-def get_data(devID,streamIndex):
-    print "Get_Data",devID,streamIndex
-    #need date filter...
+@app.route('/statistics/get_data/<devID>/<streamName>')
+def get_data(devID,streamName):
+    print "Get_Data",devID,streamName
     stList = datamanager.getStreamListByDeviceID(devID)
-    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),stList[int(streamIndex)].streamID)
-
-    list=[]
-    count=0
-    for i in datapoints:
-        #list.append([i[0],i[1]])
-        list.append([i[0],float(i[1])])
-        count+=1
-
-    max =750    
-    decimateInterval = int(math.ceil(count//max))
-    list = list[1::decimateInterval]
-
-    return jsonify(label =stList[int(streamIndex)].streamID , data=list)
-
-@app.route('/get_data_highchart/<devID>/<streamIndex>')
-def get_data_highchart(devID,streamIndex):
-    print "Get_Data_Highcharts",devID,streamIndex
-    #need date filter...
-    stList = datamanager.getStreamListByDeviceID(devID)
-    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),stList[int(streamIndex)].streamID)
-
-    list=[]
-    count=0
-    for i in datapoints:
-        list.append([i[0],float(i[1])])
-        count+=1
     
-    max =750    
-    decimateInterval = int(math.ceil(count//max))
-    list = list[1::decimateInterval]
-    print "List Items:",len(list), "\t",list[0] 
-    return jsonify(data=list)
+    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),streamName)
+    list=[]
+    count=0    
+    try:
+        for i in datapoints:
+            list.append([i[0],float(i[1])])
+            count+=1
+    except:
+        count=0
+
+    if count:
+        max =750    
+    
+        decimateInterval = int(math.ceil(count//max))
+        print "Count",count,"Dec,",decimateInterval,max
+        list = list[1::decimateInterval]
+    else:
+        list =[]
+    return jsonify(label =streamName, data=list)
 
 
 @app.route('/get_data')
