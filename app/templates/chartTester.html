@@ -88,7 +88,22 @@ $(function() {
 		    },
             rangeSelector: {
                 selected: 1,
-                inputDateFormat: '%Y-%m-%d'
+                inputDateFormat: '%Y-%m-%d',
+                buttons: [
+					{	type: 'day',
+						count: 1,
+						text: '1D'
+					},{	type: 'week',
+						count: 1,
+						text: 'Wk'
+					},{	type: 'month',
+						count: 1,
+						text: '1M'
+					},{
+						type:'all',
+						count:1,
+						text:'All'
+					}],				
             },			
 		    yAxis: {
 		    	//labels: {formatter: function() {return (this.value > 0 ? '+' : '') + this.value + '%';}},
