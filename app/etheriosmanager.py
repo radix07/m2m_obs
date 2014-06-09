@@ -354,6 +354,11 @@ class etheriosData:
         request = "/FileData/~/"+destination+"?type=file"
         print request
         print self.genericWebServiceCall(request,"PUT",data)
+    
+    def getApplicationFiles(self):
+        pass
+    def getFolderContents(self,directory):
+        "/ws/FileData?condition=fdPath='~/Applications/'"
 
     def genericWebServiceCall(self,request,getpost,message=""):
         try:

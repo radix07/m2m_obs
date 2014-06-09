@@ -233,14 +233,7 @@ def highChartTestPage():
 ########################TEST/UTILITY
 @app.route('/test.html')
 def testPage():
-    #get all streams per device
-    dataPointList=[]
-    #get max length
-    maxPoints =350
-    x=120
-    x=5
     dID = "00000000-00000000-00042DFF-FF051018"
-    
     stList = datamanager.getStreamListByDeviceID(dID)
     '''
     if stList.count():
@@ -255,19 +248,17 @@ def testPage():
             else:
                 print "No Data:",stream.streamID
                 '''
-    #dataPointList.append(datamanager.getAllDatapointsByID(dID,"GeneratorCurrent")[1::x])
-    #dataPointList.append(datamanager.getAllDatapointsByID(dID,"BatteryPower")[1::x])
-    #dataPointList.append(datamanager.getAllDatapointsByID(dID,"OilPressure")[1::x])
-    
-    #flash('Searching for new data')
-    #app.logger.debug(datamanager.getAllEventOccurances())
-    #events = datamanager.getAllEventOccurances()
-    return render_template('flot-demo.html',devID = dID,streamList=stList) #dp=dataPointList,
+    return render_template('flot-demo.html',devID = dID,streamList=stList)
     
 
 @app.route('/ctest.html')
 def chartTest():
-    return render_template('chartTester.html')
+    dID = "00000000-00000000-00042DFF-FF051018"
+    stList = datamanager.getStreamListByDeviceID(dID)
+    chartCount=0
+    for i in stList:
+        chartCount+=1
+    return render_template('chartTester.html',devID=dID,streamList=stList,chartCount=chartCount)
 
 
 @app.route('/get_data/<devID>/<streamIndex>')
@@ -275,22 +266,39 @@ def get_data(devID,streamIndex):
     print "Get_Data",devID,streamIndex
     #need date filter...
     stList = datamanager.getStreamListByDeviceID(devID)
-    #datapoints = datamanager.getAllDatapointsByID(str(devID),stList[int(streamIndex)].streamID)
     datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),stList[int(streamIndex)].streamID)
 
     list=[]
     count=0
     for i in datapoints:
-        list.append([i[0],i[1]])
+        #list.append([i[0],i[1]])
+        list.append([i[0],float(i[1])])
         count+=1
 
-    #count = len(datapoints)
     max =750    
     decimateInterval = int(math.ceil(count//max))
-    #datapoints = datapoints[1::decimateInterval] 
     list = list[1::decimateInterval]
 
     return jsonify(label =stList[int(streamIndex)].streamID , data=list)
+
+@app.route('/get_data_highchart/<devID>/<streamIndex>')
+def get_data_highchart(devID,streamIndex):
+    print "Get_Data_Highcharts",devID,streamIndex
+    #need date filter...
+    stList = datamanager.getStreamListByDeviceID(devID)
+    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),stList[int(streamIndex)].streamID)
+
+    list=[]
+    count=0
+    for i in datapoints:
+        list.append([i[0],float(i[1])])
+        count+=1
+    
+    max =750    
+    decimateInterval = int(math.ceil(count//max))
+    list = list[1::decimateInterval]
+    print "List Items:",len(list), "\t",list[0] 
+    return jsonify(data=list)
 
 
 @app.route('/get_data')

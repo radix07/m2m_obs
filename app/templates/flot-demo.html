@@ -128,7 +128,7 @@ $(document).ready(function() {
 			type: "GET",
 			dataType: "json",
 			data: {},
-			success: function(series) {						
+			success: function(series) {
 				//alert(series.data)
 
 				if (!alreadyFetched[series.label]) {	// Push the new data onto our existing data array
@@ -178,13 +178,11 @@ $(document).ready(function() {
 	  doPlot("right");
 	}
 
-	
     function doPlot(position) {
         thisPlot = $.plot($("#flot-line-chart-multi"), dataList, 
 		{
 			series: {
 				lines: {show: true}},
-		
             xaxes: [{
                 mode: 'time',
 				timeformat: "%y/%m/%d %H:%M"
