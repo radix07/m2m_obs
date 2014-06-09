@@ -2,7 +2,6 @@
 {% extends "base.html" %}
 {% block content %}
 
-<link rel="stylesheet" type="text/css" media="all" href="{{ url_for('static', filename='daterangepicker/daterangepicker-bs3.css')}}" />
 <script type='text/javascript' src='https://www.google.com/jsapi'></script>
 <script type='text/javascript'>
 	google.load('visualization', '1.1', {'packages':['annotationchart']});
@@ -87,7 +86,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											{% for i in streamList %}<tr><td><a href="/controller/{{ devID }}/{{ i.streamID }}">{{ i.streamID }}</a></td><td>{{i.datapoint}}</td></tr>{% endfor %}
+											{% for i in streamList %}<tr><td><a href="/controller/{{ devID }}/{{ i.streamID }}"></a></td><td>{{i.datapoint}}</td></tr>{% endfor %}
 										</tbody>
 									</table>
 								</div>

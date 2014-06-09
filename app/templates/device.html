@@ -34,7 +34,7 @@
 												{% for i in streamList %}
                                                 <tr>
 													<!--<td><a href="{{request.path}}/{{ i.streamID }}">{{ i.streamID }}</a></td>-->
-													<td><a href="/statistics/{{ devID }}">{{ i.streamID }}</a></td>
+													<td><a href="/statistics/{{ devID }}/{{loop.index-1}}">{{ i.streamID }}</a></td>
                                                     <td>{{i.datapoint}}</td>
                                                     <td>{{momentjs(i.timeStamp).epoch()}}</td>
 													

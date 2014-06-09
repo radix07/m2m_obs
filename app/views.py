@@ -217,6 +217,46 @@ def controller(deviceID):
                            eventData=datamanager.getAllEventOccurances(devID=deviceID),
                            datatable=1,
                            )
+
+@app.route('/statistics/<dID>')
+@app.route('/statistics/<dID>/<idx>')
+@login_required
+def chartTest(dID,idx=0):
+    stList = datamanager.getStreamListByDeviceID(dID)
+    chartCount=0
+    for i in stList:
+        chartCount+=1
+    return render_template('hcDataPlotter.html',devID=dID,streamList=stList,chartCount=chartCount,idx=idx)
+
+
+@app.route('/statistics/get_data/<devID>/<streamName>')
+@login_required
+def get_data(devID,streamName):
+    print "Get_Data",devID,streamName
+    stList = datamanager.getStreamListByDeviceID(devID)
+    
+    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),streamName)
+    list=[]
+    count=0    
+    try:
+        for i in datapoints:
+            list.append([i[0],float(i[1])])
+            count+=1
+    except:
+        count=0
+
+    if count:
+        max =750    
+    
+        decimateInterval = int(math.ceil(count//max))
+        print "Count",count,"Dec,",decimateInterval,max
+        list = list[1::decimateInterval]
+    else:
+        list =[]
+    return jsonify(label =streamName, data=list)
+
+
+
 @app.route('/t')
 def highChartTestPage():
     dataPointList=[]
@@ -250,39 +290,6 @@ def testPage():
                 '''
     return render_template('flot-demo.html',devID = dID,streamList=stList)
     
-@app.route('/statistics/<dID>')
-def chartTest(dID):
-    stList = datamanager.getStreamListByDeviceID(dID)
-    chartCount=0
-    for i in stList:
-        chartCount+=1
-    return render_template('hcDataPlotter.html',devID=dID,streamList=stList,chartCount=chartCount)
-
-
-@app.route('/statistics/get_data/<devID>/<streamName>')
-def get_data(devID,streamName):
-    print "Get_Data",devID,streamName
-    stList = datamanager.getStreamListByDeviceID(devID)
-    
-    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),streamName)
-    list=[]
-    count=0    
-    try:
-        for i in datapoints:
-            list.append([i[0],float(i[1])])
-            count+=1
-    except:
-        count=0
-
-    if count:
-        max =750    
-    
-        decimateInterval = int(math.ceil(count//max))
-        print "Count",count,"Dec,",decimateInterval,max
-        list = list[1::decimateInterval]
-    else:
-        list =[]
-    return jsonify(label =streamName, data=list)
 
 
 @app.route('/get_data')
