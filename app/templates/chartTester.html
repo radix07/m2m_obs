@@ -49,10 +49,13 @@ $(function() {
 		yAxisOptions = [],
 		seriesCounter = 0,
 		names = [{%for i in range(chartCount)%}'{{i}}',{%endfor%}],
-
+		TZoffset = moment().zone()*60*1000;
 		colors = Highcharts.getOptions().colors;
 	$.each(names, function(i, name) {
 		$.getJSON('get_data/00000000-00000000-00042DFF-FF051018/'+name.toLowerCase(), function(data) {
+			for (var j=0; j< data.data.length; j++){
+				data.data[j][0]-=TZoffset
+			}						
 			seriesOptions[i] = {
 				name: data.label,
 				data: data.data,
