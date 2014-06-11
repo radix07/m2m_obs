@@ -20,7 +20,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> 
-							<a href="{{request.script_root }}/controller/{{devID}}">{{devID}}</a>\{{stID}} Data List
+							<a href="{{request.script_root }}/controller/{{dev_id}}">{{dev_id}}</a>\{{stID}} Data List
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -73,8 +73,8 @@
                                             <tbody>
 												{% for i in streamList %}
                                                 <tr>
-													<!--<td><a href="#" onClick="togglePlot({{loop.index-1}}); return false;">{{ i.streamID }}</a></td>-->
-													<td><a href="#" onClick="fetchData({{loop.index-1}}); return false;">{{ i.streamID }}</a></td>
+													<!--<td><a href="#" onClick="togglePlot({{loop.index-1}}); return false;">{{ i.stream_id }}</a></td>-->
+													<td><a href="#" onClick="fetchData({{loop.index-1}}); return false;">{{ i.stream_id }}</a></td>
                                                     <td>{{i.datapoint}}</td>
 													<td><input type="checkbox" name="yaxis" value="Enable"></td>
                                                 </tr>
@@ -124,7 +124,7 @@ $(document).ready(function() {
 	var alreadyFetched = {};
 	
 	fetchData = (function (seriesIdx) {
-		$.ajax({url:'get_data/{{devID}}/'+seriesIdx,
+		$.ajax({url:'get_data/{{dev_id}}/'+seriesIdx,
 			type: "GET",
 			dataType: "json",
 			data: {},

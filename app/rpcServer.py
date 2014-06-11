@@ -46,11 +46,11 @@ class xmlServerProc():
             print "Cal Failed"
         return result
 
-    def GetDB(self,devID,type=0,force=0,index=0):
+    def GetDB(self,dev_id,type=0,force=0,index=0):
         #if table doesnt exist or force
         #check if exists
         print "Get Database" 
-        localDatabase = "db_"+devID+"_"+str(index)
+        localDatabase = "db_"+dev_id+"_"+str(index)
         if not force and os.path.isfile(localDatabase):
             #verify connection!
             try:

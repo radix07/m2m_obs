@@ -14,7 +14,10 @@ import etheriosmanager
 import datamanager
 import string
 import math
+
 app.permanent_session_lifetime = timedelta(minutes=30)
+#app.permanent_session_lifetime = timedelta(seconds=10)
+
 app.last_time = 0
 if not os.environ.get('DATABASE_URL') is None:
     localFrontEnd = 0
@@ -33,6 +36,7 @@ def load_user(id):
 
 @app.before_request
 def before_request():
+    session.modified = True
     g.user = current_user
     if g.user.is_authenticated():
         g.user.last_seen = datetime.utcnow()
@@ -71,7 +75,7 @@ def login():
 def logout():
     logout_user()
     #if localFrontEnd:
-    flash("User logged out")
+    flash("User logged out session timeout")
     return redirect('index')
 
 
@@ -80,13 +84,14 @@ def logout():
 @app.route('/')
 @login_required
 def index_page():
+    session.permanent = True
     if etherios.updateDeviceList() is None:
         flash("Bad Credentials",'message')
         redirect('/logout')
 
     ed = datamanager.getAllEventOccurances()
     #for e in ed:
-        #print e.devID,e.streamID,e.datapoint,e.timeStamp
+        #print e.dev_id,e.stream_id,e.datapoint,e.timestamp
 
     return render_template('index.html',user= g.user.get_username(),
                            devList=etherios.deviceListInfo,
@@ -171,19 +176,19 @@ def deviceConfigView(deviceID):
     form = pecosConfigForm(request.form)    
     return render_template('deviceConfiguration.html',   #dataPoint
                            user= g.user.get_username(),
-                           devID = deviceID,
+                           dev_id = deviceID,
                            form = form,
                            datatable=1)
 
-@app.route('/controller/<deviceID>/<streamID>')
+@app.route('/controller/<deviceID>/<stream_id>')
 @login_required
-def dataPointView(deviceID,streamID):
-    #dataPointList = datamanager.getAllDatapointsByID(deviceID,streamID)
-    dataPointList = datamanager.getAllDatapointsByIDRaw(str(deviceID),streamID)
+def dataPointView(deviceID,stream_id):
+    #dataPointList = datamanager.getAllDatapointsByID(deviceID,stream_id)
+    dataPointList = datamanager.getAllDatapointsByIDRaw(str(deviceID),stream_id)
     count=0
     list =[]
     for st in dataPointList:
-        #st.timeStamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000)))
+        #st.timestamp = str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000)))
         #list.append([str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime(float(st[0])/1000))),st[1]])
         list.append([st[0],st[1]])
         count+=1        
@@ -198,8 +203,8 @@ def dataPointView(deviceID,streamID):
                            user= g.user.get_username(),
                            dataPointList=list,
                            streamList=streamList,
-                           devID = deviceID,
-                           stID = streamID,
+                           dev_id = deviceID,
+                           stID = stream_id,
                            eventData=datamanager.getAllEventOccurances(),
                            datatable=1)
 
@@ -213,8 +218,8 @@ def controller(deviceID):
     return render_template('device.html',
                            user= g.user.get_username(),
                            streamList=streamList,
-                           devID = deviceID,
-                           eventData=datamanager.getAllEventOccurances(devID=deviceID),
+                           dev_id = deviceID,
+                           eventData=datamanager.getAllEventOccurances(dev_id=deviceID),
                            datatable=1,
                            )
 
@@ -222,20 +227,26 @@ def controller(deviceID):
 @app.route('/statistics/<dID>/<idx>')
 @login_required
 def chartTest(dID,idx=0):
-    stList = datamanager.getStreamListByDeviceID(dID)
-    chartCount=0
-    for i in stList:
-        chartCount+=1
-    return render_template('hcDataPlotter.html',devID=dID,streamList=stList,chartCount=chartCount,idx=idx)
+    try:
+        print "Stat Plot: ",dID
+        stList = datamanager.getStreamListByDeviceID(dID)
+        chartCount=0
+        for i in stList:
+            chartCount+=1
+            print i.stream_id,
+        print "\nChart:",chartCount," Index:",idx
+    except Exception,e:
+        print e
+    return render_template('hcDataPlotter.html',dev_id=dID,streamList=stList,chartCount=chartCount,idx=idx)
 
 
-@app.route('/statistics/get_data/<devID>/<streamName>')
+@app.route('/statistics/get_data/<dev_id>/<streamName>')
 @login_required
-def get_data(devID,streamName):
-    print "Get_Data",devID,streamName
-    stList = datamanager.getStreamListByDeviceID(devID)
+def get_data(dev_id,streamName):
+    print "Get_Data",dev_id,streamName
+    stList = datamanager.getStreamListByDeviceID(dev_id)
     
-    datapoints = datamanager.getAllDatapointsByIDRaw(str(devID),streamName)
+    datapoints = datamanager.getAllDatapointsByIDRaw(str(dev_id),streamName)
     list=[]
     count=0    
     try:
@@ -268,7 +279,7 @@ def highChartTestPage():
     stList = datamanager.getStreamListByDeviceID(dID)
 
     #return render_template('highchart.htm')
-    return render_template('highchart.htm',devID = dID,streamList=stList)
+    return render_template('highchart.htm',dev_id = dID,streamList=stList)
 
 ########################TEST/UTILITY
 @app.route('/test.html')
@@ -277,18 +288,18 @@ def testPage():
     stList = datamanager.getStreamListByDeviceID(dID)
     '''
     if stList.count():
-        recordCount = len(datamanager.getAllDatapointsByID(dID,stList[0].streamID))
+        recordCount = len(datamanager.getAllDatapointsByID(dID,stList[0].stream_id))
         decimateCount = int(round(recordCount/maxPoints))
         print "DecInterval:",decimateCount,"  Record Count:",recordCount
         for stream in stList:        
-            temp = datamanager.getAllDatapointsByID(dID,stream.streamID)[1::decimateCount]
-            if len(temp) > 0 and stream.streamID != "EventList":
-                print stream.streamID
+            temp = datamanager.getAllDatapointsByID(dID,stream.stream_id)[1::decimateCount]
+            if len(temp) > 0 and stream.stream_id != "EventList":
+                print stream.stream_id
                 dataPointList.append(temp)
             else:
-                print "No Data:",stream.streamID
+                print "No Data:",stream.stream_id
                 '''
-    return render_template('flot-demo.html',devID = dID,streamList=stList)
+    return render_template('flot-demo.html',dev_id = dID,streamList=stList)
     
 
 

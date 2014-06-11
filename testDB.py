@@ -28,7 +28,7 @@ class Test_testDB(unittest.TestCase):
         try:
             dID = "00000000-00000000-00042DFF-FF051018"
             stList = datamanager.getStreamListByDeviceID(dID)
-            datapoints = datamanager.getAllDatapointsByID(str(dID),stList[int(0)].streamID)
+            datapoints = datamanager.getAllDatapointsByID(str(dID),stList[int(0)].stream_id)
 
 
             print "Device Count:",db.session.query(device).filter(device.id.like('%')).count() 
@@ -36,7 +36,7 @@ class Test_testDB(unittest.TestCase):
             print "Data Point Count:",db.session.query(dataPointRecords).filter(dataPointRecords.id.like('%')).count() 
             print "Latest DataPoint:",time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(datamanager.getMostRecentTSDataPoint())/1000)))
 
-            print "WR21 Specific Data Point Count:",db.session.query(dataPointRecords).filter(dataPointRecords.devID.like('%fb%')).count() 
+            print "WR21 Specific Data Point Count:",db.session.query(dataPointRecords).filter(dataPointRecords.dev_id.like('%fb%')).count() 
             assert 1==1            
         except Exception,e:
             print e
@@ -57,32 +57,32 @@ class Test_testDB(unittest.TestCase):
         #maxThresh = 55
         minThresh = 10
         maxThresh = 25
-        #devID = "00000000-00000000-00042DFF-FF0418FB"
+        #dev_id = "00000000-00000000-00042DFF-FF0418FB"
 
-        devID = "00080003-00000000-030001F1-90D17C44"
+        dev_id = "00080003-00000000-030001F1-90D17C44"
         #timeSince = 1399533532000
         timeSince = 1399992866000  #when fix for time comp added
 
-        print "Device:",devID
+        print "Device:",dev_id
         print "Start Time:",time.strftime('%B %d, %Y %H:%M:%S', time.localtime((timeSince/1000)))
-        strList = datamanager.getStreamListByDeviceID(devID)
+        strList = datamanager.getStreamListByDeviceID(dev_id)
         for st in strList:
-            print st.streamID
-            if st.streamID == 'EventList':
+            print st.stream_id
+            if st.stream_id == 'EventList':
                 pass
             else:
                 fist=0
-                dp = datamanager.getAllDatapointsFiltered(devID,timeSince,st.streamID)
+                dp = datamanager.getAllDatapointsFiltered(dev_id,timeSince,st.stream_id)
                 try:
                     lastRecord = dp[0]
                     for i in dp:
                         #should be close to 44
                         if fist > 0:
-                            delta = (i.timeStamp - lastRecord.timeStamp)/1000 
+                            delta = (i.timestamp - lastRecord.timestamp)/1000 
                             if delta < minThresh or delta >maxThresh:
                                 print "Delta:",delta ,"\t",
-                                print "Time:",time.strftime('%B %d, %Y %H:%M:%S', time.localtime((i.timeStamp/1000))),
-                                print i.id,i.timeStamp,i.datapoint,i.created_on
+                                print "Time:",time.strftime('%B %d, %Y %H:%M:%S', time.localtime((i.timestamp/1000))),
+                                print i.id,i.timestamp,i.datapoint,i.created_on
                         fist=1
                         lastRecord = i
 

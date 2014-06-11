@@ -3,7 +3,6 @@
 {% block content %}
 <script src="{{ url_for('static', filename='js/highstocks/highstock.js') }}"></script>
 <script src="{{ url_for('static', filename='js/highstocks/modules/exporting.js') }}"></script>
-
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
@@ -17,7 +16,7 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<i class="fa fa-bar-chart-o fa-fw"></i> 
-						<a href="{{request.script_root }}/controller/{{devID}}">{{devID}}</a>\{{stID}} Data List
+						<a href="{{request.script_root }}/controller/{{dev_id}}">{{dev_id}}</a>\{{stID}} Data List
 					</div>
 					<!-- /.panel-heading -->
 					<div class="panel-body">
@@ -50,27 +49,27 @@ $(function() {
 		yAxisOptions = [],
 		seriesCounter = 0,
 		showPlot=true,
-		names = [{%for i in streamList%}'{{i.streamID}}',{%endfor%}],
+		names = [{%for i in streamList%}'{{i.stream_id}}',{%endfor%}],
 		TZoffset = moment().zone()*60*1000;
 		colors = Highcharts.getOptions().colors;
-		
+
 		//need to split this out into its own function so data isnt loaded all at once
 	$.each(names, function(i, name) {
-		$.getJSON('/statistics/get_data/{{devID}}/'+name, function(data) {
+		$.getJSON('/statistics/get_data/{{dev_id}}/'+name, function(data) {
 			if (data.data.length>1) {
 				for (var j=0; j< data.data.length; j++){
 					data.data[j][0]-=TZoffset
 				}
 			}
 			else {name =name+"(0)";}
-			
+
 			if (seriesCounter == {{idx}})
 				{showPlot=true;}
 			else
 				{showPlot=false;}
-			
+
 			seriesOptions[i] = {
-				name: name, 
+				name: name,
 				data: data.data,
 				visible:showPlot,
 			};
@@ -85,10 +84,10 @@ $(function() {
 
 	// create the chart when all data is loaded
 	function createChart() {
-		$('#container').highcharts('StockChart', {	
+		$('#container').highcharts('StockChart', {
             title: {
                 text: 'PG Data View'
-            },		
+            },
 		    chart: {
 				events: {
 					load: function(chart) {
@@ -116,8 +115,8 @@ $(function() {
 						type:'all',
 						count:1,
 						text:'All'
-					}],				
-            },			
+					}],
+            },
 		    yAxis: {
 		    	//labels: {formatter: function() {return (this.value > 0 ? '+' : '') + this.value + '%';}},
 		    	plotLines: [{
@@ -130,7 +129,7 @@ $(function() {
                 //events : {afterSetExtremes : afterSetExtremes},
                 minRange: 3600 * 1000 // one hour
             },
-			
+
 			legend:{
 				enabled: true,
 				layout: 'vertical',
@@ -143,18 +142,10 @@ $(function() {
 			},
 
 			series: seriesOptions,
-			
-		    plotOptions: {
-				//line:{events:{legendItemClick: legendItemClick},},
-			},
-		    tooltip: {
-		    },
-
-		    
 		});
 	}
-	
-});	
+
+});
 
 /**
  * Load new data depending on the selected min and max
@@ -163,15 +154,15 @@ function afterSetExtremes(e) {
     var url,
         currentExtremes = this.getExtremes(),
         range = e.max - e.min;
-    
+
     chart.showLoading('Loading data from server...');
     $.getJSON('http://www.highcharts.com/samples/data/from-sql.php?start='+ Math.round(e.min) +
             '&end='+ Math.round(e.max) +'&callback=?', function(data) {
-        
+
         chart.series[0].setData(data);
         chart.hideLoading();
     });
-    
+
 }
 
 function legendItemClick(e){
@@ -179,4 +170,5 @@ function legendItemClick(e){
 	chart.series[0].setData(data);
 }
 </script>
+
 {% endblock %}

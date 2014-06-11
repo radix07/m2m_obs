@@ -14,7 +14,7 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Device Details - {{devID}}
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Device Details - {{dev_id}}
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -33,10 +33,10 @@
                                             <tbody>
 												{% for i in streamList %}
                                                 <tr>
-													<!--<td><a href="{{request.path}}/{{ i.streamID }}">{{ i.streamID }}</a></td>-->
-													<td><a href="/statistics/{{ devID }}/{{loop.index-1}}">{{ i.streamID }}</a></td>
+													<!--<td><a href="{{request.path}}/{{ i.stream_id }}">{{ i.stream_id }}</a></td>-->
+													<td><a href="/statistics/{{ dev_id }}/{{loop.index-1}}">{{ i.stream_id }}</a></td>
                                                     <td>{{i.datapoint}}</td>
-                                                    <td>{{momentjs(i.timeStamp).epoch()}}</td>
+                                                    <td>{{momentjs(i.timestamp).epoch()}}</td>
 													
                                                 </tr>
 												{% endfor %}
@@ -68,10 +68,10 @@
                         <div class="panel-body">
                             <div class="list-group">
 								{%for e in eventData%}
-								{%if devID == e.devID%}
+								{%if dev_id == e.dev_id%}
                                 <a href="#" class="list-group-item">
                                     <i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
-                                    <span class="pull-right text-muted small"><em>{{momentjs(e.timeStamp).calendar()}}</em>
+                                    <span class="pull-right text-muted small"><em>{{momentjs(e.timestamp).calendar()}}</em>
                                     </span>
                                 </a>
 								{%endif%}

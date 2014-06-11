@@ -81,12 +81,12 @@ def controlDataTable():
     global rpc
     global forceDB
     print "Local DataTable"
-    devID = "123"
+    dev_id = "123"
     if isinstance(rpc, int):
         return redirect('/local')
 
     #db = rpc.getDatabase(force=forceDB)
-    db = rpc.GetDB(devID,force=forceDB)
+    db = rpc.GetDB(dev_id,force=forceDB)
     dbData = rpc.GetDBVarValues()
     if not db:
         resetLocalControlInterface()

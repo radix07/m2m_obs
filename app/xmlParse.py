@@ -155,7 +155,7 @@ def parseStreamListingXML(ds):
         #test.append(s.getElementsByTagName("data")[0].firstChild.nodeValue)
             #get sub value
         test.append(units)
-        valueList.append(test)    ##devID,dataItem
+        valueList.append(test)    ##dev_id,dataItem
 
     return valueList
 

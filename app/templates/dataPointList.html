@@ -42,7 +42,7 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<i class="fa fa-bar-chart-o fa-fw"></i> 
-						<a href="{{request.script_root }}/controller/{{devID}}">{{devID}}</a>\{{stID}} Data List
+                        <a href="{{request.script_root }}/controller/{{dev_id}}">{{dev_id}}</a>\{{stID}} Data List
 					</div>
 					<!-- /.panel-heading -->
 					<div class="panel-body">
@@ -86,7 +86,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											{% for i in streamList %}<tr><td><a href="/controller/{{ devID }}/{{ i.streamID }}"></a></td><td>{{i.datapoint}}</td></tr>{% endfor %}
+											{% for i in streamList %}<tr><td><a href="/controller/{{ dev_id }}/{{ i.stream_id }}"></a></td><td>{{i.datapoint}}</td></tr>{% endfor %}
 										</tbody>
 									</table>
 								</div>

@@ -67,7 +67,7 @@ class etheriosData:
         else:
             self.deviceListInfo =[]
             for record in result:       #([connectID,lat,longit,group,connected,globID,disconnectTime ])
-                self.deviceListInfo.append([record.devConnectwareId,record.dpMapLat,record.dpMapLong,"",record.dpConnectionStatus,record.dpGlobalIp,record.dpLastDisconnectTime])
+                self.deviceListInfo.append([record.devConnectwareId,record.dp_map_lat,record.dp_map_long,"",record.dp_connection_status,record.dp_global_ip,record.dp_last_disconnect_time])
             #check for new devices if stale
             #self.printFormattedNestedArray(self.deviceListInfo)
         '''
@@ -78,8 +78,8 @@ class etheriosData:
             self.updateLatestStreamValues()     #query for all streams
         else:
             self.streamListInfo =[]
-            for record in result:       #(devID,StreamID,TS,datapoint)
-                self.streamListInfo.append([record.devID,record.streamID,record.timeStamp,record.datapoint])
+            for record in result:       #(dev_id,stream_id,TS,datapoint)
+                self.streamListInfo.append([record.dev_id,record.stream_id,record.timestamp,record.datapoint])
             #check for new streams
             #self.printFormattedNestedArray(self.streamListInfo)
         
@@ -93,7 +93,7 @@ class etheriosData:
             #print "Latest DB DataPoint: ",str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result)/1000))))
             #datamanager.normalizeDataPointRecords()
             #should extend to recent datapoints, and get latest if stale (older than.. 1 day/hour??)
-            #print "Len:",len(result),result[0].id, result[0].devID,result[0].datapoint,result[0].timeStamp
+            #print "Len:",len(result),result[0].id, result[0].dev_id,result[0].datapoint,result[0].timestamp
             pass
         return "Data Initialzed!"
 
@@ -162,6 +162,7 @@ class etheriosData:
 
     def updateDeviceList(self):
         response_body = self.genericWebServiceCall("/DeviceCore","GET")
+        result = None
                 
         try:
             if "Bad credentials" in response_body:
@@ -183,17 +184,17 @@ class etheriosData:
                 print "\tNEW Device","\t",i[1],i[3]
                 if i[0][0] == "0":
                     i[0].upper()
-                datamanager.addNewDevice(devConnectwareId=i[0],dpMapLat=i[1],dpMapLong=i[2],dpConnectionStatus=i[4],dpGlobalIp=i[5],dpLastDisconnectTime=i[6])
-                #recordItem = models.device(devConnectwareId=i[0],dpMapLat=i[1],dpMapLong=i[2],dpConnectionStatus=i[4],dpGlobalIp=i[5],dpLastDisconnectTime=i[6])
+                datamanager.addNewDevice(dev_connectware_id=i[0],dp_map_lat=i[1],dp_map_long=i[2],dp_connection_status=i[4],dp_global_ip=i[5],dp_last_disconnect_time=i[6])
+                #recordItem = models.device(dev_connectware_id=i[0],dp_map_lat=i[1],dp_map_long=i[2],dp_connection_status=i[4],dp_global_ip=i[5],dp_last_disconnect_time=i[6])
                 #db.session.add(recordItem)
             else:
-                print "\tUPDATE Device","\t",result.devConnectwareId,result.dpConnectionStatus
-                result.devConnectwareId=i[0]
-                result.dpMapLat=i[1]
-                result.pMapLong=i[2]
-                result.dpConnectionStatus=i[4]
-                result.dpGlobalIp=i[5]
-                result.dpLastDisconnectTime=i[6]
+                print "\tUPDATE Device","\t",result.dev_connectware_id,result.dp_connection_status
+                result.dev_connectware_id=i[0]
+                result.dp_map_lat=i[1]
+                result.dp_map_long=i[2]
+                result.dp_connection_status=i[4]
+                result.dp_global_ip=i[5]
+                result.dp_last_disconnect_time=i[6]
         print "Committing Device List..."
         datamanager.commitDB()
         
@@ -240,14 +241,14 @@ class etheriosData:
             else: 
                 print "Processing ",len(streamPoints)," Data Points..."
                 newDataPointCounter+=len(streamPoints)
-                if datamanager.fastaddDataPoints(devID=stream[0],streamID=stream[1],pointList = streamPoints):
+                if datamanager.fastaddDataPoints(dev_id=stream[0],stream_id=stream[1],pointList = streamPoints):
                     commitFlag = 1
                 '''
                 for p in streamPoints:                   
                     result = datamanager.getDataPoint(stream[0],stream[1],p[0],p[1])
                     if result is None:
                         commitFlag = 1
-                        datamanager.addDataPoint(devID=stream[0],streamID=stream[1],timeStamp = p[0],datapoint=p[1])
+                        datamanager.addDataPoint(dev_id=stream[0],stream_id=stream[1],timestamp = p[0],datapoint=p[1])
                         newDataPointCounter+=1
                         #app.logger.debug("New Data Point Record: ",stream,p)
                         '''
@@ -261,51 +262,52 @@ class etheriosData:
 
 ##Get stream data for system with latest data, store to database or update if item already exists
     def updateLatestStreamValues(self):
+        result = None
         response_body = self.genericWebServiceCall("/DataStream/","GET")
         if "Bad credentials" in response_body:
             return None
 
         self.streamListInfo = xmlParse.parseStreamListingXML(response_body)
-        #(devID,StreamID,TS,datapoint)
+        #(dev_id,stream_id,TS,datapoint)
         for i in self.streamListInfo:
-            #result = models.latestDataStreamPoints.query.filter_by(streamID=i[1],devID=i[0]).first()
-            result = datamanager.getStreamListByDeviceIDAndStreamID(i[0],i[1])
+            #result = models.latestDataStreamPoints.query.filter_by(stream_id=i[1],dev_id=i[0]).first()
+            result = datamanager.getStreamListByDeviceIDAndstream_id(i[0],i[1])
             if result is None:
                 print "\tNEW RECORD","\t",i#[2],i[3]
-                datamanager.addNewStream(devID=i[0],streamID=i[1],timeStamp = i[2],datapoint=i[3])
-                #recordItem = models.latestDataStreamPoints(devID=i[0],streamID=i[1],timeStamp = i[2],datapoint=i[3])
+                datamanager.addNewStream(dev_id=i[0],stream_id=i[1],timestamp = i[2],datapoint=i[3])
+                #recordItem = models.latestDataStreamPoints(dev_id=i[0],stream_id=i[1],timestamp = i[2],datapoint=i[3])
                 #db.session.add(recordItem)
             else:
-                print "\tUPDATE RECORD","\t",result.devID,result.streamID,result.datapoint,str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result.timeStamp)/1000))))
-                result.timeStamp = i[2]
+                print "\tUPDATE RECORD","\t",result.dev_id,result.stream_id,result.datapoint,str(time.strftime('%B %d, %Y %H:%M:%S', time.localtime((float(result.timestamp)/1000))))
+                result.timestamp = i[2]
                 result.datapoint=i[3]
         datamanager.commitDB()
 
         return self.streamListInfo
 
-    def getDataStreamPoints(self,devID,dataStr,size=0,startTime=0,endTime=0,limit=0):        
-        #if devID == "00000000-00000000-00042DFF-FF0418FB":
-            #devID = "0000000-00000000-00042DFF-FF0418FB"    #temp fix for embedded id error
+    def getDataStreamPoints(self,dev_id,dataStr,size=0,startTime=0,endTime=0,limit=0):        
+        #if dev_id == "00000000-00000000-00042DFF-FF0418FB":
+            #dev_id = "0000000-00000000-00042DFF-FF0418FB"    #temp fix for embedded id error
 
         if startTime and endTime:
             # ws/DataPoint/device1/temp?startTime=2012-07-18T12:00:00.000Z&endTime=2012-07-18T12:30:00.000Z            
             if limit<=0:
-                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,endTime)
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(dev_id,dataStr,startTime,endTime)
             else:
-                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}&size={4}".format(devID,dataStr,startTime,endTime,limit)
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}&size={4}".format(dev_id,dataStr,startTime,endTime,limit)
             print "\tStart/End time thresh",call            
             response_body = self.genericWebServiceCall(call,"GET")
         elif startTime:
             if limit<=0:
-                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(devID,dataStr,startTime,str(int(time.time()*1000)))
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}".format(dev_id,dataStr,startTime,str(int(time.time()*1000)))
             else:
-                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}&size={4}".format(devID,dataStr,startTime,str(int(time.time()*1000)),limit)
+                call = "/DataPoint/{0}/{1}?startTime={2}&endTime={3}&size={4}".format(dev_id,dataStr,startTime,str(int(time.time()*1000)),limit)
             print "\tStart time thresh:",call
             response_body = self.genericWebServiceCall(call,"GET")            
         elif size:
-            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}?size={2}".format(devID,dataStr,size),"GET")
+            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}?size={2}".format(dev_id,dataStr,size),"GET")
         else:
-            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}".format(devID,dataStr),"GET")                     
+            response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}".format(dev_id,dataStr),"GET")                     
         if "Bad credentials" in response_body:
             return None            
             
@@ -313,7 +315,7 @@ class etheriosData:
         re = xmlParse.parseDataStreamXML(response_body)
         return re
 
-    def getDeviceSettings(self,devID):
+    def getDeviceSettings(self,dev_id):
         message = """<sci_request version="1.0"> 
           <send_message cache="false"> 
             <targets> 
@@ -321,7 +323,7 @@ class etheriosData:
             </targets> 
             <rci_request version="1.1"> 
               <query_setting/></rci_request>
-          </send_message></sci_request>"""%devID
+          </send_message></sci_request>"""%dev_id
         try:
             webservice = self.getHTTPWebService()
             # to what URL to send the request with a given HTTP method

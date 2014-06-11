@@ -50,10 +50,10 @@ class TestCase(unittest.TestCase):
         dList = datamanager.getDeviceList()         
         print "Device Count:",len(dList)
         for d in dList:
-            print d.id,d.devConnectwareId,d.dpConnectionStatus,d.dpGlobalIp,d.dpLastDisconnectTime,d.dpMapLat,d.dpMapLong
+            print d.id,d.dev_connectware_id,d.dp_connection_status,d.dp_global_ip,d.dp_last_disconnect_time,d.dp_map_lat,d.dp_map_long
             #invalid devConnectorID,dups (sql model)?
             assert d.id > 0
-            assert len(d.devConnectwareId)==35    # or d.devConnectwareId == "python
+            assert len(d.dev_connectware_id)==35    # or d.dev_connectware_id == "python
         
         #data streams
         minTS=99999999999999
@@ -62,13 +62,13 @@ class TestCase(unittest.TestCase):
         print "data stream count:",len(strList)
         for s in strList:
             assert s.id > 0            
-            assert (len(s.devID) == 35 or s.devID == "pythonPC1_Ryan" )      #invalid devID                            
+            assert (len(s.dev_id) == 35 or s.dev_id == "pythonPC1_Ryan" )      #invalid dev_id                            
             #dups   (model, how to verify?)
             
-            if int(s.timeStamp) < int(minTS):     #timestamp warnings, range report??
-                minTS = s.timeStamp
-            if int(s.timeStamp) > int(maxTS):
-                maxTS = s.timeStamp
+            if int(s.timestamp) < int(minTS):     #timestamp warnings, range report??
+                minTS = s.timestamp
+            if int(s.timestamp) > int(maxTS):
+                maxTS = s.timestamp
             #datapoint length? warn
             #units
 
@@ -83,12 +83,12 @@ class TestCase(unittest.TestCase):
         print "data points count:",len(dpList)
         for dp in dpList:
             assert dp.id > 0
-            assert (len(dp.devID) == 35 or dp.devID == "pythonPC1_Ryan" )      #invalid devID                            
-            if int(dp.timeStamp) < int(minTS):     #timestamp warnings, range report??
-                minTS = dp.timeStamp
-            if int(dp.timeStamp) > int(maxTS):
-                maxTS = dp.timeStamp
-            #dups?? select * where devID/StreamID/tiemstamp/datapoint match
+            assert (len(dp.dev_id) == 35 or dp.dev_id == "pythonPC1_Ryan" )      #invalid dev_id                            
+            if int(dp.timestamp) < int(minTS):     #timestamp warnings, range report??
+                minTS = dp.timestamp
+            if int(dp.timestamp) > int(maxTS):
+                maxTS = dp.timestamp
+            #dups?? select * where dev_id/stream_id/tiemstamp/datapoint match
             #timestamp validate
             #datapoint len?
             #1395079462299

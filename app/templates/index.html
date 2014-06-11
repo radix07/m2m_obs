@@ -191,8 +191,8 @@
                         <div class="panel-body">
                             <div class="list-group">
 								{%for e in eventData%}
-                                 <a href="controller/{{ e.devID }}" class="list-group-item"><i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
-                                 <span class="pull-right text-muted small"><em>{{momentjs(e.timeStamp).calendar()}}</em></span></a>
+                                 <a href="controller/{{ e.dev_id }}" class="list-group-item"><i class="fa fa-exclamation-circle fa-fw"></i> {{e.datapoint}}
+                                 <span class="pull-right text-muted small"><em>{{momentjs(e.timestamp).calendar()}}</em></span></a>
 								{%endfor%}
                             </div>
                             <!-- /.list-group -->

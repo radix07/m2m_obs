@@ -8,7 +8,8 @@ SECRET_KEY = 'pg_crypto_key_you-will-never-guess'
 DASH_ETHERIOS_KEY = 'jxvdUO4]3bymJi5'
 
 if os.environ.get('DATABASE_URL') is None:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db') + '?check_same_thread=False'
+    #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db') + '?check_same_thread=False'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://flask:flask@localhost/heroku'
 else:
     SQLALCHEMY_DATABASE_URI = os.environ['DATABASE_URL']
 
