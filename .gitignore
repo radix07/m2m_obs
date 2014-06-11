@@ -15,4 +15,8 @@ run.spec
 *.pyproj
 *.pyc
 *.db
+*.dump
+dashKeyFile
+db_1230
+db_123_0
 .svn
