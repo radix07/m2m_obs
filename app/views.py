@@ -150,6 +150,7 @@ def controllersDetail(deviceID):
 @login_required
 def deviceConfigView(deviceID):
     if request.method == 'POST':
+        #form post processor file
         if request.form['submit'] == 'Submit Battery Charge':
             if form.validate_on_submit():
                 print "Form Response:"  #package data items
@@ -172,7 +173,11 @@ def deviceConfigView(deviceID):
                 flash(etherios.RCIRequest(deviceID,"START"))
             else:
                 flash("request already sent...")
-
+   
+    #load  calibration data
+        #try from postgres
+        #else load from Etherios file
+        #else go direct to controller if connected
     form = pecosConfigForm(request.form)    
     return render_template('deviceConfiguration.html',   #dataPoint
                            user= g.user.get_username(),
