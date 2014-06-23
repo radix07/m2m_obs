@@ -170,7 +170,8 @@ def deviceConfigView(deviceID):
             curr_time = int(time.time())        #put blocking timer to prevent over sending/running etherios/device
             if curr_time - app.last_time > 30:
                 app.last_time = curr_time
-                flash(etherios.RCIRequest(deviceID,"START"))
+                #flash(etherios.RCIRequest(deviceID,"START"))
+                flash(etherios.RCIRequest(deviceID,{"cmd":"START","value":1}))
             else:
                 flash("request already sent...")
    

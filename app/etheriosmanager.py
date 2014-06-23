@@ -4,7 +4,7 @@ import xmlParse
 import datamanager
 import time
 from config import DASH_ETHERIOS_KEY
-
+import json
 #Group->Users (TBD???)
     #User->Device (allowances...???)
 #Group->Devices
@@ -67,7 +67,7 @@ class etheriosData:
         else:
             self.deviceListInfo =[]
             for record in result:       #([connectID,lat,longit,group,connected,globID,disconnectTime ])
-                self.deviceListInfo.append([record.devConnectwareId,record.dp_map_lat,record.dp_map_long,"",record.dp_connection_status,record.dp_global_ip,record.dp_last_disconnect_time])
+                self.deviceListInfo.append([record.devConnectwareId,record.dp_map_lat,record.dp_map_long,"",record.dp_connection_status,record.dpGlobalIp,record.dp_last_disconnect_time])
             #check for new devices if stale
             #self.printFormattedNestedArray(self.deviceListInfo)
         '''
@@ -310,7 +310,7 @@ class etheriosData:
             response_body = self.genericWebServiceCall("/DataPoint/{0}/{1}".format(dev_id,dataStr),"GET")                     
         if "Bad credentials" in response_body:
             return None            
-            
+        print "Response Recieved"    
         #print "RE Body:",response_body
         re = xmlParse.parseDataStreamXML(response_body)
         return re
@@ -343,13 +343,23 @@ class etheriosData:
         statuscode, statusmessage, header = webservice.getreply()
 
     def RCIRequest(self,deviceID,data,action="action_callback"):
-        message ="""<sci_request version="1.0"> 
-                    <send_message cache="false"><targets><device id="%s"/>
-                    </targets> <rci_request version="1.1"><do_command target="%s">
-                    <data>%s</data></do_command></rci_request></send_message></sci_request>"""%(deviceID,action,data)
-        temp = self.genericWebServiceCall("/sci","POST",message)
-        print temp
-        return temp
+        jsonMode=1
+        if jsonMode:
+            data = base64.encodestring(json.dumps(data))
+            message = """<sci_request version="1.0"><file_system><targets><device id="%s"/>
+                        </targets><commands><put_file path="jq_0"><data>%s</data></put_file>
+                        </commands></file_system></sci_request>"""%(deviceID,data)
+            temp = self.genericWebServiceCall("/sci","POST",message)
+
+            return temp
+        if 0:
+            message ="""<sci_request version="1.0"> 
+                        <send_message cache="false"><targets><device id="%s"/>
+                        </targets> <rci_request version="1.1"><do_command target="%s">
+                        <data>%s</data></do_command></rci_request></send_message></sci_request>"""%(deviceID,action,data)
+            temp = self.genericWebServiceCall("/sci","POST",message)
+            print temp
+            return temp
 
     def sendFile(self,data,destination):
         #webservice.putrequest("PUT", "/ws/FileData/~/test_folder/test.xml?type=file")
